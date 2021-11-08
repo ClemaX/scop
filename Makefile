@@ -29,11 +29,14 @@ SRCS = $(addprefix $(SRCDIR)/,\
 OBJS = $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
 DEPS = $(OBJS:.o=.d)
 
+# Include directories
+SYSINCS = /usr/include /usr/local/include
+
 # Flags
-CFLAGS = -Wall -Wextra -Werror $(INCS:%=-I%)
+CFLAGS = -Wall -Wextra -Werror $(INCS:%=-I%) -I ~/.brew/include/
 DFLAGS = -MT $@ -MMD -MP -MF $(OBJDIR)/$*.d
-LDFLAGS = $(LIBDIRS:%=-L%)
-LDLIBS = $(LIBARS:lib%.a=-l%)
+LDFLAGS = $(LIBDIRS:%=-L%) -L ~/.brew/lib/
+LDLIBS = $(LIBARS:lib%.a=-l%) -framework OpenGL -lglew -lglfw
 ARFLAGS = -rcus
 
 # Compiling commands
