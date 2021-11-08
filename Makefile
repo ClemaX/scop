@@ -32,11 +32,14 @@ DEPS = $(OBJS:.o=.d)
 # Include directories
 SYSINCS = /usr/include /usr/local/include
 
+# OpenGL libraries
+include gl.mk
+
 # Flags
-CFLAGS = -Wall -Wextra -Werror $(INCS:%=-I%) -I ~/.brew/include/
+CFLAGS = -Wall -Wextra -Werror $(INCS:%=-I%) $(GLCFLAGS)
 DFLAGS = -MT $@ -MMD -MP -MF $(OBJDIR)/$*.d
-LDFLAGS = $(LIBDIRS:%=-L%) -L ~/.brew/lib/
-LDLIBS = $(LIBARS:lib%.a=-l%) -framework OpenGL -lglew -lglfw
+LDFLAGS = $(LIBDIRS:%=-L%) $(GLLDFLAGS)
+LDLIBS = $(LIBARS:lib%.a=-l%) $(GLLDLIBS:%=-l%)
 ARFLAGS = -rcus
 
 # Compiling commands
@@ -72,6 +75,10 @@ $(BINDIR)/$(NAME): $(OBJS) $(LIBS) | $(BINDIR)
 # Use	@echo "AR $@"
 #		$(ARCHIVE.o) $@ $^
 # instead when building a static library
+
+debug: CFLAGS+=-DDEBUG
+debug: fclean $(BINDIR)/$(NAME)
+
 clean:
 	$(foreach dir, $(LIBDIRS),\
 		echo "MK $(addprefix -C , $(dir)) $@" && make -C $(dir) $@ ; ):
