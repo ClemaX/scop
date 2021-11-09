@@ -21,7 +21,7 @@ ifeq ($(UNAME_S),Darwin)
 		$(error Could not find OpenGL library!)
 	endif
 	
-	GLCFLAGS = -I$(GLINCDIR)
+	GLCFLAGS = -I$(GLINCDIR) -Wno-deprecated-declarations
 	GLLDFLAGS = -L$(GLLIBDIR) -framework OpenGL
 
 	GLLDLIBS = glew glfw
