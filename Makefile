@@ -24,6 +24,9 @@ LIBARS = $(notdir $(LIBS))
 INCS = $(LIBINCS) $(INCDIR)
 SRCS = $(addprefix $(SRCDIR)/,\
 	main.c\
+	scop.c\
+	vertex.c\
+	window.c\
 )
 
 OBJS = $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
