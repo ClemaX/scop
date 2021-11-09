@@ -9,8 +9,8 @@ ifeq ($(UNAME_S),Darwin)
 	BREW = $(shell dirname $(dir $(shell which brew)))
 	
 	ifneq ($(BREW), )
-		GLINCDIR = $(shell find -L $(BREW)/include -maxdepth 1 -type d -name openssl -print -quit)
-		GLLIBDIR = $(shell find -L $(BREW)/lib -maxdepth 1 -type f -iname "libssl*" -print -quit)
+		GLINCDIR = $(dir $(shell find -L $(BREW)/include -maxdepth 1 -type d -name GL -print -quit))
+		GLLIBDIR = $(dir $(shell find -L $(BREW)/lib -maxdepth 1 -type f -iname "libglfw*" -print -quit))
 	endif
 
 	ifeq ($(GLINCDIR), )
