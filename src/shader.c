@@ -35,7 +35,7 @@ static void		shader_program_perror(GLuint program_id, GLint log_length)
 		error("shader_link: malloc: %s\n", strerror(errno));
 }
 
-static GLuint	shader_load_mem(void *data, GLint size, GLenum shader_type)
+static GLuint	shader_load_mem(const GLchar *data, GLint size, GLenum shader_type)
 {
 	GLuint	id;
 	GLint	status;
@@ -45,7 +45,7 @@ static GLuint	shader_load_mem(void *data, GLint size, GLenum shader_type)
 
 	if (id != 0)
 	{
-		glShaderSource(id, 1, data, &size);
+		glShaderSource(id, 1, &data, &size);
 		glCompileShader(id);
 
 		glGetShaderiv(id, GL_COMPILE_STATUS, &status);
@@ -86,7 +86,8 @@ static GLuint	shader_load_file(const char *file, GLenum shader_type)
 			debug("Loading shader from '%s' [%jd bytes]...\n",file, size);
 
 			id = shader_load_mem(data, size, shader_type);
-				file_unmap(&data, size);
+
+			file_unmap(&data, size);
 		}
 		else
 			error("file_map: %s\n", strerror(errno));
@@ -125,11 +126,7 @@ static GLuint	shader_link(GLuint vertex_shader_id, GLuint fragment_shader_id)
 		glDeleteShader(vertex_shader_id);
 		glDeleteShader(fragment_shader_id);
 
-		if (log_length == 0)
-		{
-			// proceed
-		}
-		else
+		if (log_length != 0)
 		{
 			shader_program_perror(program_id, log_length);
 

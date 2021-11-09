@@ -67,11 +67,13 @@ GLFWwindow	*window_new(int *width, int *height, const char *name)
 	return window;
 }
 
-int			window_loop(GLFWwindow *window)
+int			window_loop(GLFWwindow *window, GLuint shader_program_id)
 {
 	do {
 		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		glUseProgram(shader_program_id);
 
 		glEnableVertexAttribArray(0);
 

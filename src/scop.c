@@ -5,6 +5,8 @@
 
 #include <logger.h>
 
+#include <shader.h>
+
 static int	glfw_init(const scop_settings *settings)
 {
 	// Needed for core profile
@@ -49,10 +51,12 @@ static void	on_resize(GLFWwindow* window, int width, int height)
 	(void)window;
 	(void)width;
 	(void)height;
+
+	glViewport(0, 0, width, height);
 	debug("Resized window to %dx%d!\n", width, height);
 }
 
-GLFWwindow	*scop_init(scop_settings *settings)
+GLFWwindow	*scop_init(scop_settings *settings, GLuint *shader_program_id)
 {
 	GLFWwindow	*window;
 
@@ -70,17 +74,19 @@ GLFWwindow	*scop_init(scop_settings *settings)
 			// TODO: Find a way to focus full-screen window in macos
 
 			if (glew_init() == 0)
+			{
 				debug("Renderer: %s\nOpenGL version: %s\n", glGetString(GL_RENDERER), glGetString(GL_VERSION));
-			else
-				glfwTerminate();
-		}
-		else
-			glfwTerminate();
-	}
-	else
-		window = NULL;
 
-	return window;
+				*shader_program_id = shader_load(SHADER_DIR"/vertex.glsl", SHADER_DIR"/fragment.glsl");
+
+				if (*shader_program_id != 0)
+					return window;
+			}
+		}
+		glfwTerminate();
+	}
+
+	return NULL;
 }
 
 void		scop_terminate()
@@ -100,7 +106,7 @@ static void	triangle_draw()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 }
 
-int			scop_loop(GLFWwindow *window)
+int			scop_loop(GLFWwindow *window, GLuint shader_program_id)
 {
 	GLuint	vao;
 	GLuint	vb;
@@ -111,7 +117,7 @@ int			scop_loop(GLFWwindow *window)
 
 	triangle_draw();
 
-	ret = window_loop(window);
+	ret = window_loop(window, shader_program_id);
 
 	scop_terminate();
 

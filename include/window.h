@@ -10,4 +10,4 @@
 
 GLFWwindow	*window_new(int *width, int *height, const char *name);
 
-int			window_loop(GLFWwindow *window);
+int			window_loop(GLFWwindow *window, GLuint shader_program_id);

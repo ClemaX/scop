@@ -8,6 +8,8 @@
 # define SCOP_WINDOW_NAME "scop (debug)"
 #endif
 
+#define SHADER_DIR "shaders"
+
 typedef struct	scop_settings
 {
 	int	gl_major;
@@ -17,6 +19,6 @@ typedef struct	scop_settings
 	int	height;
 }				scop_settings;
 
-GLFWwindow	*scop_init(scop_settings *settings);
-int			scop_loop(GLFWwindow *window);
+GLFWwindow	*scop_init(scop_settings *settings, GLuint *shader_program_id);
+int			scop_loop(GLFWwindow *window, GLuint shader_program_id);
 void		scop_terminate();

@@ -81,7 +81,8 @@ $(BINDIR)/$(NAME): $(OBJS) $(LIBS) | $(BINDIR)
 #		$(ARCHIVE.o) $@ $^
 # instead when building a static library
 
-debug: CFLAGS+=-DDEBUG
+debug: CFLAGS+=-DDEBUG -g3 -fsanitize=address
+debug: LDFLAGS+=-g3 -fsanitize=address
 debug: fclean $(BINDIR)/$(NAME)
 
 clean:
