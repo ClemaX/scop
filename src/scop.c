@@ -10,7 +10,7 @@ static int	glfw_init(const scop_settings *settings)
 	// Needed for core profile
 	glewExperimental = GL_TRUE;
 
-	if (!glfwInit())
+	if (glfwInit() == GL_FALSE)
 	{
 		error("Failed to initialize GLFW\n");
 		return -1;
@@ -21,8 +21,11 @@ static int	glfw_init(const scop_settings *settings)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, settings->gl_minor);
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
+	glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE); // Do not minimize fullscreen applications on focus loss
 #endif
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
+	//glfwWindowHint(GLFW_FOCUSED, GL_TRUE);
+	//glfwWindowHint(GLFW_FOCUS_ON_SHOW, GL_TRUE); // Specifies whether the window will be given input focus when glfwShowWindow is called.
 
 	return 0;
 }
@@ -32,7 +35,7 @@ static int	glew_init()
 	// Needed for core profile
 	glewExperimental = GL_TRUE;
 
-	if (!glewInit())
+	if (glewInit() != GLEW_OK)
 	{
 		error("Failed to initialize GLEW\n");
 		return -1;
@@ -41,22 +44,41 @@ static int	glew_init()
 	return 0;
 }
 
+static void	on_resize(GLFWwindow* window, int width, int height)
+{
+	(void)window;
+	(void)width;
+	(void)height;
+	debug("Resized window to %dx%d!\n", width, height);
+}
+
 GLFWwindow	*scop_init(scop_settings *settings)
 {
 	GLFWwindow	*window;
 
-	glfw_init(settings);
-	window = window_new(&settings->width, &settings->height, SCOP_WINDOW_NAME);
-
-	if (window != NULL)
+	if (glfw_init(settings) == 0)
 	{
-		glfwMakeContextCurrent(window);
-		glew_init();
+		window = window_new(&settings->width, &settings->height, SCOP_WINDOW_NAME);
 
-		debug("Renderer: %s\nOpenGL version: %s\n", glGetString(GL_RENDERER), glGetString(GL_VERSION));
+		if (window != NULL)
+		{
+			glfwSetWindowSizeCallback(window, &on_resize);
+			glfwMakeContextCurrent(window);
+
+			//glfwShowWindow(window);
+			//glfwFocusWindow(window);
+			// TODO: Find a way to focus full-screen window in macos
+
+			if (glew_init() == 0)
+				debug("Renderer: %s\nOpenGL version: %s\n", glGetString(GL_RENDERER), glGetString(GL_VERSION));
+			else
+				glfwTerminate();
+		}
+		else
+			glfwTerminate();
 	}
 	else
-		glfwTerminate();
+		window = NULL;
 
 	return window;
 }

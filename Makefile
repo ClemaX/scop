@@ -23,8 +23,10 @@ LIBARS = $(notdir $(LIBS))
 # Sources
 INCS = $(LIBINCS) $(INCDIR)
 SRCS = $(addprefix $(SRCDIR)/,\
+	file.c\
 	main.c\
 	scop.c\
+	shader.c\
 	vertex.c\
 	window.c\
 )

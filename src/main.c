@@ -9,8 +9,8 @@ int			main(void)
 		.gl_major = 4,
 		.gl_minor = 1,
 		.anti_aliasing = 4,
-		.width = 1920,
-		.height = 1080,
+		.width = 1280,
+		.height = 720,
 	};
 	GLFWwindow *const			window = scop_init(&settings);
 	int							ret;
