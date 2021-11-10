@@ -31,3 +31,6 @@ typedef dvec4 	dmat4x2[2];
 typedef dvec4 	dmat4x3[3];
 typedef dvec4 	dmat4x4[4];
 typedef dmat4x4	dmat4;
+
+void	matrix_perspective(mat4 dst, float fov, float aspect_ratio, float near, float far);
+void	matrix_mul_point(mat4 matrix, vec3 *point);

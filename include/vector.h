@@ -1,51 +1,26 @@
 #pragma once
 
-#include <GL/gl.h>
+#include <GL/glew.h>
 
-#define declare_vec2(type) union { \
-	GLint	data[2]; \
-	struct \
-	{ \
-		GLint	x; \
-		GLint	y; \
-	}; \
-}
+#define x 0
+#define y 1
+#define z 2
+#define w 3
 
-#define declare_vec3(type) union { \
-	GLint	data[3]; \
-	struct \
-	{ \
-		GLint	x; \
-		GLint	y; \
-		GLint	z; \
-	}; \
-}
+typedef GLboolean	bvec2[2];
+typedef GLint		ivec2[2];
+typedef GLuint		uvec2[2];
+typedef GLfloat		vec2[2];
+typedef GLdouble	dvec2[2];
 
-#define declare_vec4(type) union { \
-	GLint	data[4]; \
-	struct \
-	{ \
-		GLint	x; \
-		GLint	y; \
-		GLint	z; \
-		GLint	w; \
-	}; \
-}
+typedef GLboolean	bvec3[2];
+typedef GLint		ivec3[3];
+typedef GLuint		uvec3[3];
+typedef GLfloat		vec3[3];
+typedef GLdouble	dvec3[3];
 
-typedef declare_vec2(GLboolean)	bvec2;
-typedef declare_vec2(GLint)		ivec2;
-typedef declare_vec2(GLuint)	uvec2;
-typedef declare_vec2(GLfloat)	vec2;
-typedef declare_vec2(GLdouble)	dvec2;
-
-typedef declare_vec2(GLboolean)	bvec3;
-typedef declare_vec3(GLint)		ivec3;
-typedef declare_vec3(GLuint)	uvec3;
-typedef declare_vec3(GLfloat)	vec3;
-typedef declare_vec3(GLdouble)	dvec3;
-
-typedef declare_vec2(GLboolean)	bvec4;
-typedef declare_vec4(GLint)		ivec4;
-typedef declare_vec4(GLuint)	uvec4;
-typedef declare_vec4(GLfloat)	vec4;
-typedef declare_vec4(GLdouble)	dvec4;
+typedef GLboolean	bvec4[2];
+typedef GLint		ivec4[4];
+typedef GLuint		uvec4[4];
+typedef GLfloat		vec4[4];
+typedef GLdouble	dvec4[4];

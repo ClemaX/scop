@@ -80,7 +80,10 @@ GLFWwindow	*scop_init(scop_settings *settings, GLuint *shader_program_id)
 				*shader_program_id = shader_load(SHADER_DIR"/vertex.glsl", SHADER_DIR"/fragment.glsl");
 
 				if (*shader_program_id != 0)
+				{
+
 					return window;
+				}
 			}
 		}
 		glfwTerminate();
