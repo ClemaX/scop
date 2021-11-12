@@ -119,6 +119,7 @@ int			object_write(object *object, FILE *file)
 	return 0;
 }
 
+/*
 int			main(int ac, const char **av)
 {
 	FILE	*file;
@@ -143,3 +144,4 @@ int			main(int ac, const char **av)
 
 	return ret;
 }
+*/
