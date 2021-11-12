@@ -32,8 +32,12 @@ typedef struct	object_cmd
 void	object_init(object *object);
 void	object_destroy(object *object);
 
-int		object_exec(object *object, char *command);
 int		object_load(object *object, FILE *file);
+int		object_load_raw(object *object, const void *data, GLsizeiptr size);
+
+int		object_write(object *object, FILE *file);
+
+int		object_exec(object *object, char *command);
 
 int		object_v(object *object, const char *arguments);
 int		object_vn(object *object, const char *arguments);

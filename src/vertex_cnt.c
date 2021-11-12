@@ -19,8 +19,8 @@ static inline int	vertex_cnt_push_raw(vertex_cnt *container,
 
 	if (ret == 0)
 	{
-		memcpy(container->data + container->count, vertices,
-			container->vertex_size * count);
+		memcpy((void *)container->data + container->count * container->vertex_size,
+			vertices, container->vertex_size * count);
 
 		container->count += count;
 
@@ -76,7 +76,7 @@ int					vertex_cnt_cpy(vertex_cnt *dst, const vertex_cnt *src)
 	return ret;
 }
 
-int				vertex_cnt_resize(vertex_cnt *container, GLsizeiptr new_size)
+int					vertex_cnt_resize(vertex_cnt *container, GLsizeiptr new_size)
 {
 	void		*data = realloc(container->data, new_size * container->vertex_size);
 	const int	ret = -(data == NULL);
@@ -91,12 +91,12 @@ int				vertex_cnt_resize(vertex_cnt *container, GLsizeiptr new_size)
 	return ret;
 }
 
-int				vertex_cnt_push(vertex_cnt *container, const void *vec)
+int					vertex_cnt_push(vertex_cnt *container, const void *vec)
 {
 	return vertex_cnt_push_raw(container, vec, 1);
 }
 
-int				vertex_cnt_cat(vertex_cnt *container, const vertex_cnt *other)
+int					vertex_cnt_cat(vertex_cnt *container, const vertex_cnt *other)
 {
 	return vertex_cnt_push_raw(container, other->data, other->count);
 }

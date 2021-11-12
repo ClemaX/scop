@@ -25,12 +25,13 @@ int	object_load(object *object, FILE *file)
 		len = getline(&line, &size, file);
 		if (len > 0)
 		{
-			line[len - 1] = '\0';
+			if (line[len - 1] == '\n')
+				line[--len] = '\0';
 			ret = object_exec(object, line);
 		}
-	} while (len > 0 && ret == 0);
+	} while (len != -1 && ret == 0);
 
-	if (len == -1 && errno != 0)
+	if (len == -1 && errno != 0 && errno != EAGAIN)
 	{
 		error("object_load: getline: %s\n", strerror(errno));
 		ret = -1;
@@ -41,22 +42,17 @@ int	object_load(object *object, FILE *file)
 
 	free(line);
 
-	fclose(file);
 	return ret;
 }
 
 int	object_load_raw(object *object, const void *data, GLsizeiptr size)
 {
-	const GLsizeiptr	vertex_size = sizeof(vec4);
-	int					ret;
+	int	ret;
 
-	ret = vertex_cnt_init(&object->v, data, vertex_size, size / vertex_size);
-	if (ret == 0)
-	{
-		bzero(&object->vt, sizeof(object->vt));
-		bzero(&object->vn, sizeof(object->vn));
-		bzero(&object->f, sizeof(object->f));
-	}
+	object_init(object);
+
+	ret = vertex_cnt_init(&object->v, data, object->v.vertex_size,
+		size / object->v.vertex_size);
 
 	return ret;
 }

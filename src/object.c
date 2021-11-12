@@ -64,7 +64,7 @@ int			object_write(object *object, FILE *file)
 {
 	for (GLsizeiptr i = 0; i < object->v.count; i++)
 	{
-		const int	o = i * sizeof(vec4);
+		const int	o = i * sizeof(vec4) / sizeof(*object->v.data);
 
 		fprintf(file, "v %f %f %f",
 			object->v.data[o + x], object->v.data[o + y],
@@ -78,7 +78,7 @@ int			object_write(object *object, FILE *file)
 
 	for (GLsizeiptr i = 0; i < object->vn.count; i++)
 	{
-		const int	o = i * sizeof(vec3);
+		const int	o = i * sizeof(vec3) / sizeof(*object->v.data);
 
 		fprintf(file, "vn %f %f %f\n",
 			object->vn.data[o + x], object->vn.data[o + y],
@@ -87,7 +87,7 @@ int			object_write(object *object, FILE *file)
 
 	for (GLsizeiptr i = 0; i < object->vt.count; i++)
 	{
-		const int	o = i * sizeof(vec3);
+		const int	o = i * sizeof(vec3) / sizeof(*object->v.data);
 
 		fprintf(file, "vt %f %f",
 			object->vt.data[o + x], object->vt.data[o + y]);
@@ -118,30 +118,3 @@ int			object_write(object *object, FILE *file)
 
 	return 0;
 }
-
-/*
-int			main(int ac, const char **av)
-{
-	FILE	*file;
-	object	obj;
-	int		ret;
-
-	if (ac < 2)
-		file = stdin;
-	else
-		file = fopen(av[1], "r");
-
-	if (file == NULL)
-		error("fopen: %s: %s\n", av[1], strerror(errno));
-
-	ret = object_load(&obj, file);
-
-	if (ret == 0)
-	{
-		object_write(&obj, stdout);
-		object_destroy(&obj);
-	}
-
-	return ret;
-}
-*/
