@@ -108,8 +108,13 @@ int	scop_init(scop *scene)
 	return ret;
 }
 
-void		scop_terminate()
+void		scop_terminate(scop *scene)
 {
+	if (scene->shader_id != 0)
+	{
+		glDeleteShader(scene->shader_id);
+		scene->shader_id = 0;
+	}
 	glfwTerminate();
 }
 
@@ -161,8 +166,6 @@ int			scop_loop(scop *scene)
 		glfwPollEvents();
 	} while (glfwGetKey(scene->window, GLFW_KEY_ESCAPE) != GLFW_PRESS
 			&& glfwWindowShouldClose(scene->window) == 0);
-
-	scop_terminate();
 
 	return 0;
 }

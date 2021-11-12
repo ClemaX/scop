@@ -19,7 +19,10 @@ int			main(void)
 	//scop_load();
 
 	if (ret == 0)
+	{
 		ret = scop_loop(&scene);
+		scop_terminate(&scene);
+	}
 
 	return ret;
 }
