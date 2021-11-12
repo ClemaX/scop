@@ -5,7 +5,7 @@
 
 int			main(void)
 {
-	scop		scene = (scop){
+	scop	scene = (scop){
 		.settings = {
 			.gl_major = 4,
 			.gl_minor = 1,
@@ -14,9 +14,13 @@ int			main(void)
 			.height = 720,
 		}
 	};
-	int					ret = scop_init(&scene);
+	int		ret = scop_init(&scene);
 
-	//scop_load();
+	scop_load_obj_file(&scene, "./resources/triangle.obj");
+
+#ifdef DEBUG
+	object_write(&scene.obj, stderr);
+#endif
 
 	if (ret == 0)
 	{

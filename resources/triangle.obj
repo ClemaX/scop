@@ -1,0 +1,4 @@
+# Hello triangle!
+v -1 -1 0
+v 1 -1 0
+v 0 1 0

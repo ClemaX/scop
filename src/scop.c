@@ -1,11 +1,12 @@
 #include <GL/glew.h>
+#include <string.h>
+#include <errno.h>
 
 #include <scop.h>
 #include <vertex.h>
+#include <shader.h>
 
 #include <logger.h>
-
-#include <shader.h>
 
 static int	glfw_init(const scop_settings *settings)
 {
@@ -77,7 +78,7 @@ static int	scop_window_init(scop *scene)
 	return ret;
 }
 
-int	scop_init(scop *scene)
+int			scop_init(scop *scene)
 {
 	int			ret;
 
@@ -116,18 +117,7 @@ void		scop_terminate(scop *scene)
 		scene->shader_id = 0;
 	}
 	glfwTerminate();
-}
-
-
-static void	triangle_draw()
-{
-	static GLfloat	vertices[] = {
-		-1.0f, -1.0f, 0.0f,
-		1.0f, -1.0f, 0.0f,
-		0.0f, 1.0f, 0.0f,
-	};
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	object_destroy(&scene->obj);
 }
 
 int			scop_loop(scop *scene)
@@ -135,10 +125,13 @@ int			scop_loop(scop *scene)
 	GLuint	vao;
 	GLuint	vb;
 
+	if (scene->obj.v.count == 0)
+		return 1;
+
 	vertex_array_object(&vao);
 	vertex_buffer(&vb);
 
-	triangle_draw();
+	vertex_buffer_data(&scene->obj.v, GL_STATIC_DRAW);
 
 	do {
 		// Clear the screen
@@ -150,8 +143,8 @@ int			scop_loop(scop *scene)
 
 		glVertexAttribPointer(
 			0,			// attribute
-			3,			// size
-			GL_FLOAT,	// type
+			scene->obj.v.vertex_size / sizeof(*scene->obj.v.data), // vertex size
+			GL_FLOAT,	// data type
 			GL_FALSE,	// normalized
 			0,			// stride
 			(void*)0	// array buffer offset
@@ -168,4 +161,27 @@ int			scop_loop(scop *scene)
 			&& glfwWindowShouldClose(scene->window) == 0);
 
 	return 0;
+}
+
+int			scop_load_obj_raw(scop *scene, const void *vertices, GLsizeiptr size)
+{
+	return object_load_raw(&scene->obj, vertices, size);
+}
+
+int			scop_load_obj_file(scop *scene, const char *file_path)
+{
+	FILE	*file;
+	int		ret;
+
+	file = fopen(file_path, "r");
+	ret = -(file == NULL);
+	if (ret == 0)
+	{
+		ret = object_load(&scene->obj, file);
+		fclose(file);
+	}
+	else
+		error("fopen: %s: %s\n", file_path, strerror(errno));
+
+	return ret;
 }

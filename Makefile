@@ -23,10 +23,20 @@ LIBARS = $(notdir $(LIBS))
 # Sources
 INCS = $(LIBINCS) $(INCDIR)
 SRCS = $(addprefix $(SRCDIR)/,\
+	camera.c\
+	face_cnt.c\
+	face.c\
 	file.c\
 	main.c\
+	matrix.c\
+	object_cmd_op.c\
+	object_cmd.c\
+	object_load.c\
+	object.c\
 	scop.c\
 	shader.c\
+	vector.c\
+	vertex_cnt.c\
 	vertex.c\
 	window.c\
 )
@@ -44,7 +54,7 @@ include gl.mk
 CFLAGS = -Wall -Wextra -Werror $(INCS:%=-I%) $(GLCFLAGS)
 DFLAGS = -MT $@ -MMD -MP -MF $(OBJDIR)/$*.d
 LDFLAGS = $(LIBDIRS:%=-L%) $(GLLDFLAGS)
-LDLIBS = $(LIBARS:lib%.a=-l%) $(GLLDLIBS:%=-l%)
+LDLIBS = $(LIBARS:lib%.a=-l%) $(GLLDLIBS:%=-l%) -lm
 ARFLAGS = -rcus
 
 # Compiling commands
