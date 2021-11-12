@@ -2,7 +2,7 @@
 
 #include <logger.h>
 
-GLFWmonitor	*monitor_get(const GLFWvidmode **mode)
+static GLFWmonitor	*monitor_get(const GLFWvidmode **mode)
 {
 	GLFWmonitor *const			monitor = glfwGetPrimaryMonitor();
 
@@ -17,7 +17,7 @@ GLFWmonitor	*monitor_get(const GLFWvidmode **mode)
 	return monitor;
 }
 
-GLFWwindow	*window_new(int *width, int *height, const char *name)
+GLFWwindow			*window_new(int *width, int *height, const char *name)
 {
 	GLFWwindow			*window;
 	GLFWmonitor			*monitor;
@@ -65,36 +65,4 @@ GLFWwindow	*window_new(int *width, int *height, const char *name)
 	}
 
 	return window;
-}
-
-int			window_loop(GLFWwindow *window, GLuint shader_program_id)
-{
-	do {
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glUseProgram(shader_program_id);
-
-		glEnableVertexAttribArray(0);
-
-		glVertexAttribPointer(
-			0,			// attribute
-			3,			// size
-			GL_FLOAT,	// type
-			GL_FALSE,	// normalized
-			0,			// stride
-			(void*)0	// array buffer offset
-		);
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glDisableVertexAttribArray(0);
-
-		// Swap buffers
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-	} while (glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-			&& glfwWindowShouldClose(window) == 0);
-
-	return 0;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <window.h>
+#include <camera.h>
 
 #ifdef DEBUG
 # define SCOP_WINDOW_NAME "scop"
@@ -12,13 +13,24 @@
 
 typedef struct	scop_settings
 {
-	int	gl_major;
-	int	gl_minor;
-	int	anti_aliasing;
-	int	width;
-	int	height;
+	int			gl_major;
+	int			gl_minor;
+	int			anti_aliasing;
+	int			width;
+	int			height;
+	const char	*fragment_shader;
+	const char	*vertex_shader;
 }				scop_settings;
 
-GLFWwindow	*scop_init(scop_settings *settings, GLuint *shader_program_id);
-int			scop_loop(GLFWwindow *window, GLuint shader_program_id);
-void		scop_terminate();
+typedef struct	scop
+{
+	scop_settings	settings;
+	camera			cam;
+	GLuint			shader_id;
+	GLFWwindow		*window;
+}				scop;
+
+
+int		scop_init(scop *scene);
+int		scop_loop(scop *scene);
+void	scop_terminate();
