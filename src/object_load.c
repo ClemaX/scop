@@ -20,6 +20,8 @@ int	object_load(object *object, FILE *file)
 
 	object_init(object);
 
+	errno = 0;
+
 	do
 	{
 		len = getline(&line, &size, file);
@@ -31,7 +33,7 @@ int	object_load(object *object, FILE *file)
 		}
 	} while (len != -1 && ret == 0);
 
-	if (len == -1 && errno != 0 && errno != EAGAIN)
+	if (len == -1 && errno != 0)
 	{
 		error("object_load: getline: %s\n", strerror(errno));
 		ret = -1;
