@@ -180,9 +180,9 @@ int			scop_loop(scop *scene)
 
 	vertex_buffer_data(&scene->obj.v, GL_STATIC_DRAW);
 
-	const vec3	pos = {1, 5, 1};
-	const vec3	target = {0, 0, 0};
-	const vec3	up = {0, 1, 0};
+	const vec3	pos = { 0, 3, 5 };
+	const vec3	target = { 0, 0, 0 };
+	const vec3	up = { 0, 1, 0 };
 
 	camera_lookat(&scene->cam, pos, target, up);
 
