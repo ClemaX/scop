@@ -16,7 +16,7 @@
 #endif
 
 #ifndef SHADER_DIR
-# define SHADER_DIR "shaders"
+# define SHADER_DIR "./shaders"
 #endif
 
 typedef struct	scop_settings

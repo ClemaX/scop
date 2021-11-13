@@ -1,6 +1,8 @@
 #include <GL/glew.h>
 #include <string.h>
 #include <errno.h>
+#include <unistd.h>
+#include <limits.h>
 
 #include <scop.h>
 #include <vertex.h>
@@ -10,7 +12,10 @@
 
 static int	glfw_init(const scop_settings *settings)
 {
-	int	ret;
+	int		ret;
+	char	cwd[PATH_MAX];
+
+	getcwd(cwd, sizeof(cwd));
 
 	// Needed for core profile
 	glewExperimental = GL_TRUE;
@@ -27,6 +32,14 @@ static int	glfw_init(const scop_settings *settings)
 		glfwWindowHint(GLFW_AUTO_ICONIFY, GL_FALSE); // Do not minimize fullscreen applications on focus loss
 #endif
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
+
+		ret = chdir(cwd);
+
+		if (ret != 0)
+		{
+			error("chdir: %s: %s\n", cwd, strerror(errno));
+			glfwTerminate();
+		}
 	}
 	else
 		error("Failed to initialize GLFW\n");
