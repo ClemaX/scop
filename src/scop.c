@@ -167,18 +167,47 @@ int	scene_movement(scop *scene)
 	return moved;
 }
 
+static inline void	scop_draw_array(const vertex_cnt *container, attrib attribute, GLenum mode)
+{
+	debug("draw_array: Drawing container to %d, vertex_size: %zu\n", attribute, container->vertex_size / sizeof(*container->data));
+	glEnableVertexAttribArray(attribute);
+
+	glVertexAttribPointer(
+		attribute,	// attribute
+		container->vertex_size / sizeof(*container->data), // vertex size
+		GL_FLOAT,	// data type
+		GL_FALSE,	// normalized
+		0,			// stride
+		NULL		// array buffer offset
+	);
+
+
+	debug("draw_array: vertex count: %zu\n", container->count);
+
+	glDrawArrays(mode, 0, container->count);
+
+	glDisableVertexAttribArray(attribute);
+}
+
+static inline void	scop_draw_obj(scop *scene)
+{
+	scop_draw_array(&scene->obj.v, ATTRIB_VERTEX, GL_TRIANGLES);
+}
+
 int			scop_loop(scop *scene)
 {
-	GLuint	vao;
-	GLuint	vb;
+	mat4	mvp;
+	GLuint	vao_id;
+	GLuint	vb_id;
+	GLint	matrix_id;
 
 	if (scene->obj.v.count == 0)
 		return 1;
 
-	vertex_array_object(&vao);
-	vertex_buffer(&vb);
+	vertex_array_object(&vao_id);
+	vertex_buffer(&vb_id);
 
-	vertex_buffer_data(&scene->obj.v, GL_STATIC_DRAW);
+	vertex_buffer_data(vb_id, &scene->obj.v, GL_STATIC_DRAW);
 
 	const vec3	pos = { 0, 3, 5 };
 	const vec3	target = { 0, 0, 0 };
@@ -186,10 +215,7 @@ int			scop_loop(scop *scene)
 
 	camera_lookat(&scene->cam, pos, target, up);
 
-	mat4	mvp;
-
-
-	GLint	matrix_id = glGetUniformLocation(scene->shader_id, "MVP");
+	matrix_id = glGetUniformLocation(scene->shader_id, "MVP");
 
 //		debug("shader id: %u, matrix_id: %u\n", scene->shader_id, matrix_id);
 
@@ -201,23 +227,10 @@ int			scop_loop(scop *scene)
 		glUseProgram(scene->shader_id);
 		// Apply MVP
 		camera_project(&scene->cam, mvp, scene->obj.model);
+
 		glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-//		gl_perror();
 
-		glEnableVertexAttribArray(0);
-
-		glVertexAttribPointer(
-			0,			// attribute
-			4,			// vertex size
-			GL_FLOAT,	// data type
-			GL_FALSE,	// normalized
-			0,			// stride
-			(void*)0	// array buffer offset
-		);
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glDisableVertexAttribArray(0);
+		scop_draw_obj(scene);
 
 		// Swap buffers
 		glfwSwapBuffers(scene->window);

@@ -19,6 +19,12 @@
 # define SHADER_DIR "./shaders"
 #endif
 
+typedef enum	attrib
+{
+	ATTRIB_VERTEX = 0,
+	ATTRIB_FRAGMENT = 1,
+}				attrib;
+
 typedef struct	scop_settings
 {
 	int			gl_major;
