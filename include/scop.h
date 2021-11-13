@@ -11,7 +11,13 @@
 # define SCOP_WINDOW_NAME "scop (debug)"
 #endif
 
-#define SHADER_DIR "shaders"
+#ifndef SCOP_VELOCITY
+# define SCOP_VELOCITY 0.2f
+#endif
+
+#ifndef SHADER_DIR
+# define SHADER_DIR "shaders"
+#endif
 
 typedef struct	scop_settings
 {

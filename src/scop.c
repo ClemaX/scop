@@ -94,6 +94,10 @@ int			scop_init(scop *scene)
 				scene->shader_id = shader_load(SHADER_DIR"/vertex.glsl",
 					SHADER_DIR"/fragment.glsl");
 				ret = -(scene->shader_id == 0);
+				if (ret == 0)
+				{
+					camera_init(&scene->cam, 90.0f, 1.0f, 100.0f);
+				}
 			}
 
 			if (ret != 0)
@@ -120,6 +124,36 @@ void		scop_terminate(scop *scene)
 	object_destroy(&scene->obj);
 }
 
+int	scene_movement(scop *scene)
+{
+	vec3	velocity = { 0, 0, 0 };
+	int		moved;
+
+	if (glfwGetKey(scene->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		return -1;
+
+	if (glfwGetKey(scene->window, GLFW_KEY_W) == GLFW_PRESS)
+		velocity[z] += SCOP_VELOCITY;
+	if (glfwGetKey(scene->window, GLFW_KEY_S) == GLFW_PRESS)
+		velocity[z] -= SCOP_VELOCITY;
+
+	if (glfwGetKey(scene->window, GLFW_KEY_A) == GLFW_PRESS)
+		velocity[x] += SCOP_VELOCITY;
+	if (glfwGetKey(scene->window, GLFW_KEY_D) == GLFW_PRESS)
+		velocity[x] -= SCOP_VELOCITY;
+
+	if (glfwGetKey(scene->window, GLFW_KEY_SPACE) == GLFW_PRESS)
+		velocity[y] += SCOP_VELOCITY;
+	if (glfwGetKey(scene->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		velocity[y] -= SCOP_VELOCITY;
+
+	moved = velocity[x] != 0 || velocity[y] != 0 || velocity[z] != 0;
+	if (moved != 0)
+		camera_move_rel(&scene->cam, velocity);
+
+	return moved;
+}
+
 int			scop_loop(scop *scene)
 {
 	GLuint	vao;
@@ -133,17 +167,35 @@ int			scop_loop(scop *scene)
 
 	vertex_buffer_data(&scene->obj.v, GL_STATIC_DRAW);
 
+	const vec3	pos = {1, 5, 1};
+	const vec3	target = {0, 0, 0};
+	const vec3	up = {0, 1, 0};
+
+	camera_lookat(&scene->cam, pos, target, up);
+
+	mat4	mvp;
+
+
+	GLint	matrix_id = glGetUniformLocation(scene->shader_id, "MVP");
+
+//		debug("shader id: %u, matrix_id: %u\n", scene->shader_id, matrix_id);
+
 	do {
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Use shader
 		glUseProgram(scene->shader_id);
+		// Apply MVP
+		camera_project(&scene->cam, mvp, scene->obj.model);
+		glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
+//		gl_perror();
 
 		glEnableVertexAttribArray(0);
 
 		glVertexAttribPointer(
 			0,			// attribute
-			scene->obj.v.vertex_size / sizeof(*scene->obj.v.data), // vertex size
+			4,			// vertex size
 			GL_FLOAT,	// data type
 			GL_FALSE,	// normalized
 			0,			// stride
@@ -156,7 +208,10 @@ int			scop_loop(scop *scene)
 
 		// Swap buffers
 		glfwSwapBuffers(scene->window);
-		glfwPollEvents();
+
+		do glfwWaitEvents();
+		while (scene_movement(scene) == 0);
+//		glfwPollEvents();
 	} while (glfwGetKey(scene->window, GLFW_KEY_ESCAPE) != GLFW_PRESS
 			&& glfwWindowShouldClose(scene->window) == 0);
 

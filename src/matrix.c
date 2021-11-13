@@ -1,72 +1,84 @@
-#include <matrix.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
 
+#include <matrix.h>
 #include <vector.h>
 
-#include <string.h>
-
-#include <math.h>
+#include <logger.h>
 
 void		matrix_perspective(mat4 dst, float fov, float near, float far)
 {
-	const GLfloat		scale = 1 / tanf(fov / 2 * (M_PI / 180));
+	const GLfloat		scale = 1.0f / tanf(fov / 2.0f * (M_PI / 180.0f));
 
-	dst = (mat4){
-		{scale,	0,		0,							0},
-		{0,		scale,	0,							0},
-		{0,		0,		-far / (far - near),		-1},
-		{0,		0,		-far * near / (far - near),	0},
+	const mat4 mat = {
+		{scale,	0,		0,								0},
+		{0,		scale,	0,								0},
+		{0,		0,		far / (far - near),				1},
+		{0,		0,		-(far * near) / (far - near),	0},
 	};
+
+	memcpy(dst, mat, sizeof(mat4));
 }
 
 //void	matrix_orthographic();
 
-void		matrix_mul4_vec(vec4 dst, mat4 matrix, vec4 point)
+void		matrix_mul4_vec(vec4 dst, mat4 mat, vec4 point)
 {
-	dst[x] = point[x] * matrix[x][x] + point[y] * matrix[y][x] + point[z] * matrix[z][x];
-	dst[y] = point[x] * matrix[x][y] + point[y] * matrix[y][y] + point[z] * matrix[z][y];
-	dst[z] = point[x] * matrix[x][z] + point[y] * matrix[y][z] + point[z] * matrix[z][z];
-	dst[w] = point[x] * matrix[x][w] + point[y] * matrix[y][w] + point[z] * matrix[z][w];
+	dst[x] = point[x] * mat[x][x] + point[y] * mat[y][x] + point[z] * mat[z][x];
+	dst[y] = point[x] * mat[x][y] + point[y] * mat[y][y] + point[z] * mat[z][y];
+	dst[z] = point[x] * mat[x][z] + point[y] * mat[y][z] + point[z] * mat[z][z];
+	dst[w] = point[x] * mat[x][w] + point[y] * mat[y][w] + point[z] * mat[z][w];
 }
 
-static void	matrix_mul(GLfloat **dst, const GLfloat **a, const GLfloat **b,
+static void	matrix_mul(GLfloat *dst, const GLfloat *a, const GLfloat *b,
 	GLuint n, GLuint m, GLuint p)
 {
-	for (GLuint i = 0; i < p; i++)
+	for (GLuint i = 0; i < m; i++)
 	{
-		for (GLuint j = 0; j < m; j++)
+		for (GLuint j = 0; j < n; j++)
 		{
-			dst[i][j] = 0;
-			for (GLuint k = 0; k < n; k++)
-				dst[i][j] += a[i][k] * b[k][j];
+		//	debug("dst[%u][%u] = ", i, j);
+			dst[i * n + j] = 0;
+			for (GLuint k = 0; k < p; k++)
+			{
+		//		debug("a[%u][%u] * b[%u][%u] + ", i, k, k, j);
+				dst[i * m + j] += a[i * m + k] * b[k * m + j];
+			}
+		//	debug(" = %f\n", dst[i * m + j]);
 		}
 	}
 }
 
 void		matrix_mul4(mat4 dst, const mat4 a, const mat4 b)
 {
-	matrix_mul((GLfloat**)dst, (const GLfloat**)a, (const GLfloat**)b,
+	matrix_mul(&dst[0][0], &a[0][0], &b[0][0],
 		sizeof(*a) / sizeof(**a),
 		sizeof(mat4) / sizeof(*a),
 		sizeof(*b) / sizeof(**b));
 }
 
-void		matrix_mul3(mat3 dst, const mat3 a, const mat3 b)
-{
-	matrix_mul((GLfloat**)dst, (const GLfloat**)a, (const GLfloat**)b,
-		sizeof(*a) / sizeof(**a),
-		sizeof(mat3) / sizeof(*a),
-		sizeof(*b) / sizeof(**b));
-}
-
-void		matrix_mul2(mat2 dst, const mat2 a, const mat2 b)
-{
-	matrix_mul((GLfloat**)dst, (const GLfloat**)a, (const GLfloat**)b,
-		sizeof(*a) / sizeof(**a),
-		sizeof(mat2) / sizeof(*a),
-		sizeof(*b) / sizeof(**b));
-}
-
 void		matrix_identity4(mat4 mat, GLfloat value)
 {
-	matrix_identity(mat, value);
+	for (GLuint i = 0; i < 4; i++)
+	{
+		mat[i][i] = value;
+	}
+}
+
+void		matrix_print(const GLfloat *mat, GLuint n, GLuint m, FILE *file)
+{
+	fprintf(file, "{ ");
+
+	for (GLuint i = 0; i < m; i++)
+	{
+		fprintf(file, "{ ");
+		fprintf(file, "%f", mat[i * n + 0]);
+		for (GLuint j = 1; j < n; j++)
+		{
+			fprintf(file, ", %f", mat[i * n + j]);
+		}
+		fprintf(file, " }");
+	}
+	fprintf(file, " }\n");
 }

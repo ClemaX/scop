@@ -24,3 +24,7 @@ typedef GLint		ivec4[4];
 typedef GLuint		uvec4[4];
 typedef GLfloat		vec4[4];
 typedef GLdouble	dvec4[4];
+
+void	vec_cross(vec3 dst, const vec3 a, const vec3 b);
+void	vec_normal(vec4 dst, GLfloat X, GLfloat Y, GLfloat Z);
+void	vec_normalize(vec3 dst, const vec3 src);
