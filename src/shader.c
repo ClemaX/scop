@@ -85,7 +85,7 @@ static GLuint	shader_load_file(const char *file, GLenum shader_type)
 		id = size != -1;
 		if (id != 0)
 		{
-			debug("Loading shader from '%s' [%jd bytes]...\n",file, size);
+			debug("Loading shader from '%s' [%jd bytes]...\n", file, (long)size);
 
 			id = shader_load_mem(file, data, size, shader_type);
 
