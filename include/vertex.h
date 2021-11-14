@@ -8,4 +8,5 @@ void	vertex_array_object(GLuint *vertex_array_id);
 
 void	vertex_buffer(GLuint *vertex_buffer_id);
 
-void	vertex_buffer_data(vertex_cnt *data, GLenum usage);
+void	vertex_buffer_data(GLuint buffer_id, vertex_cnt *container,
+	GLenum usage);

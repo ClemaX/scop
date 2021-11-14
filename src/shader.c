@@ -137,6 +137,8 @@ static GLuint	shader_link(const char *vertex_name, const char *fragment_name,
 			glDeleteProgram(program_id);
 			program_id = 0;
 		}
+		else
+			debug("Linked program succesfully!\n");
 	}
 	else
 		error("shader_link: Could not create shader program!\n");

@@ -25,8 +25,6 @@ static const object_cmd	*object_cmd_parse(const char *command_name)
 	};
 	unsigned				i;
 
-	debug("object_cmd_parse: '%s'\n", command_name);
-
 	for (i = 0; i < sizeof(commands) / sizeof(*commands)
 		&& strcmp(commands[i].name, command_name); i++)
 		;
@@ -71,10 +69,7 @@ int						object_exec(object *object, char *command)
 	{
 		ret = (cmd == NULL);
 		if (ret == 0)
-		{
-			debug("obj: executing '%s' '%s'...\n", cmd->name, arguments);
 			ret = cmd->exec(object, arguments);
-		}
 	}
 
 	if (ret == 1)

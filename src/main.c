@@ -12,18 +12,19 @@ int			main(void)
 			.anti_aliasing = 4,
 			.width = 1280,
 			.height = 720,
+			.vertex_shader = SHADER_DIR"/vertex.glsl",
+			.fragment_shader = SHADER_DIR"/fragment.glsl",
 		}
 	};
 	int		ret = scop_init(&scene);
 
-	scop_load_obj_file(&scene, "./resources/triangle.obj");
-
-#ifdef DEBUG
-	object_write(&scene.obj, stderr);
-#endif
-
 	if (ret == 0)
 	{
+		ret = scop_load_obj_file(&scene, "./resources/triangle.obj");
+
+#ifdef DEBUG
+		object_write(&scene.obj, stderr);
+#endif
 		ret = scop_loop(&scene);
 		scop_terminate(&scene);
 	}

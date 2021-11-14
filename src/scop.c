@@ -1,16 +1,17 @@
-#include <GL/glew.h>
+#define _GNU_SOURCE
+#include <scop.h>
+
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
 #include <limits.h>
 
-#include <scop.h>
 #include <vertex.h>
 #include <shader.h>
 
 #include <logger.h>
 
-static int	glfw_init(const scop_settings *settings)
+static int		glfw_init(const scop_settings *settings)
 {
 	int		ret;
 	char	cwd[PATH_MAX];
@@ -47,7 +48,7 @@ static int	glfw_init(const scop_settings *settings)
 	return ret;
 }
 
-static int	glew_init()
+static inline int	glew_init()
 {
 	int	ret;
 
@@ -64,28 +65,62 @@ static int	glew_init()
 	return ret;
 }
 
-static void	on_resize(GLFWwindow* window, int width, int height)
+static void			on_resize(GLFWwindow* window, int width, int height)
 {
-	(void)window;
-	(void)width;
-	(void)height;
+	scop	*scene;
 
 	glViewport(0, 0, width, height);
-	debug("Resized window to %dx%d!\n", width, height);
+	debug("Resizing viewport to %dx%d!\n", width, height);
+
+	scene = glfwGetWindowUserPointer(window);
+	if (scene != NULL)
+	{
+		debug("Resizing scene...\n");
+		scene->settings.width = width;
+		scene->settings.height = height;
+		scop_draw(scene);
+	}
 }
 
-static int	scop_window_init(scop *scene)
+static inline int	scop_window_init(scop *scene)
 {
 	int	ret;
 
+	debug("Initializing window...\n");
 	scene->window = window_new(&scene->settings.width,
 		&scene->settings.height, SCOP_WINDOW_NAME);
 
 	ret = -(scene->window == NULL);
 	if (ret == 0)
 	{
-		glfwSetWindowSizeCallback(scene->window, &on_resize);
+		debug("Initialized window at %p\n", scene->window);
+
 		glfwMakeContextCurrent(scene->window);
+		glfwSetWindowUserPointer(scene->window, scene);
+		//glViewport(0, 0, scene->settings.width, scene->settings.height);
+	}
+
+	return ret;
+}
+
+static inline int	scop_shader_init(scop *scene)
+{
+	int	ret;
+
+	scene->shader_id = shader_load(scene->settings.vertex_shader,
+		scene->settings.fragment_shader);
+
+	ret = -(scene->shader_id == 0);
+	if (ret == 0)
+	{
+		scene->mvp_loc = glGetUniformLocation(scene->shader_id, NAME_MVP);
+
+		ret = -(scene->mvp_loc == -1);
+		if (ret != 0)
+		{
+			glDeleteShader(scene->shader_id);
+			scene->shader_id = 0;
+		}
 	}
 
 	return ret;
@@ -104,17 +139,31 @@ int			scop_init(scop *scene)
 			ret = glew_init();
 			if (ret == 0)
 			{
-				scene->shader_id = shader_load(SHADER_DIR"/vertex.glsl",
-					SHADER_DIR"/fragment.glsl");
-				ret = -(scene->shader_id == 0);
+				ret = scop_shader_init(scene);
 				if (ret == 0)
 				{
+					const vec3	pos = { 0, 0, 5 };
+					const vec3	target = { 0, 0, 0 };
+					const vec3	up = { 0, 1, 0 };
+
+					vertex_array_object(&scene->vao_id);
+					vertex_buffer(&scene->vb_id);
+
 					camera_init(&scene->cam, 90.0f, 1.0f, 100.0f);
+					camera_lookat(&scene->cam, pos, target, up);
+
+					glfwSetWindowSizeCallback(scene->window, &on_resize);
+
+					glfwGetWindowSize(scene->window, &scene->settings.width,
+						&scene->settings.height);
+
+					scop_draw(scene);
 				}
 			}
 
 			if (ret != 0)
 			{
+				error("Fatal error, destroying window!\n");
 				glfwDestroyWindow(scene->window);
 				scene->window = NULL;
 			}
@@ -122,134 +171,6 @@ int			scop_init(scop *scene)
 		if (ret != 0)
 			glfwTerminate();
 	}
-
-	return ret;
-}
-
-void		scop_terminate(scop *scene)
-{
-	if (scene->shader_id != 0)
-	{
-		glDeleteShader(scene->shader_id);
-		scene->shader_id = 0;
-	}
-	glfwTerminate();
-	object_destroy(&scene->obj);
-}
-
-int	scene_movement(scop *scene)
-{
-	vec3	velocity = { 0, 0, 0 };
-	int		moved;
-
-	if (glfwGetKey(scene->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		return -1;
-
-	if (glfwGetKey(scene->window, GLFW_KEY_W) == GLFW_PRESS)
-		velocity[z] += SCOP_VELOCITY;
-	if (glfwGetKey(scene->window, GLFW_KEY_S) == GLFW_PRESS)
-		velocity[z] -= SCOP_VELOCITY;
-
-	if (glfwGetKey(scene->window, GLFW_KEY_A) == GLFW_PRESS)
-		velocity[x] += SCOP_VELOCITY;
-	if (glfwGetKey(scene->window, GLFW_KEY_D) == GLFW_PRESS)
-		velocity[x] -= SCOP_VELOCITY;
-
-	if (glfwGetKey(scene->window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		velocity[y] += SCOP_VELOCITY;
-	if (glfwGetKey(scene->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		velocity[y] -= SCOP_VELOCITY;
-
-	moved = velocity[x] != 0 || velocity[y] != 0 || velocity[z] != 0;
-	if (moved != 0)
-		camera_move_rel(&scene->cam, velocity);
-
-	return moved;
-}
-
-int			scop_loop(scop *scene)
-{
-	GLuint	vao;
-	GLuint	vb;
-
-	if (scene->obj.v.count == 0)
-		return 1;
-
-	vertex_array_object(&vao);
-	vertex_buffer(&vb);
-
-	vertex_buffer_data(&scene->obj.v, GL_STATIC_DRAW);
-
-	const vec3	pos = { 0, 3, 5 };
-	const vec3	target = { 0, 0, 0 };
-	const vec3	up = { 0, 1, 0 };
-
-	camera_lookat(&scene->cam, pos, target, up);
-
-	mat4	mvp;
-
-
-	GLint	matrix_id = glGetUniformLocation(scene->shader_id, "MVP");
-
-//		debug("shader id: %u, matrix_id: %u\n", scene->shader_id, matrix_id);
-
-	do {
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Use shader
-		glUseProgram(scene->shader_id);
-		// Apply MVP
-		camera_project(&scene->cam, mvp, scene->obj.model);
-		glUniformMatrix4fv(matrix_id, 1, GL_FALSE, &mvp[0][0]);
-//		gl_perror();
-
-		glEnableVertexAttribArray(0);
-
-		glVertexAttribPointer(
-			0,			// attribute
-			4,			// vertex size
-			GL_FLOAT,	// data type
-			GL_FALSE,	// normalized
-			0,			// stride
-			(void*)0	// array buffer offset
-		);
-
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-
-		glDisableVertexAttribArray(0);
-
-		// Swap buffers
-		glfwSwapBuffers(scene->window);
-
-		do glfwWaitEvents();
-		while (scene_movement(scene) == 0);
-//		glfwPollEvents();
-	} while (glfwGetKey(scene->window, GLFW_KEY_ESCAPE) != GLFW_PRESS
-			&& glfwWindowShouldClose(scene->window) == 0);
-
-	return 0;
-}
-
-int			scop_load_obj_raw(scop *scene, const void *vertices, GLsizeiptr size)
-{
-	return object_load_raw(&scene->obj, vertices, size);
-}
-
-int			scop_load_obj_file(scop *scene, const char *file_path)
-{
-	FILE	*file;
-	int		ret;
-
-	file = fopen(file_path, "r");
-	ret = -(file == NULL);
-	if (ret == 0)
-	{
-		ret = object_load(&scene->obj, file);
-		fclose(file);
-	}
-	else
-		error("fopen: %s: %s\n", file_path, strerror(errno));
 
 	return ret;
 }

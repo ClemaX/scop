@@ -19,6 +19,15 @@
 # define SHADER_DIR "./shaders"
 #endif
 
+typedef enum	attrib
+{
+	ATTRIB_VERTEX = 0,
+	ATTRIB_FRAGMENT = 1,
+}				attrib;
+
+#define NAME_MVP "MVP"
+
+
 typedef struct	scop_settings
 {
 	int			gl_major;
@@ -36,13 +45,19 @@ typedef struct	scop
 	camera			cam;
 	object			obj;
 	GLuint			shader_id;
+	GLint			mvp_loc;
+	GLuint			vao_id;
+	GLuint			vb_id;
 	GLFWwindow		*window;
 }				scop;
+
+typedef void 	(*scop_resize_cb)(scop *scop, GLuint width, GLuint height);
 
 
 int		scop_init(scop *scene);
 void	scop_terminate();
 
+void	scop_draw(scop *scene);
 int		scop_loop(scop *scene);
 
 int		scop_load_obj_raw(scop *scene, const void *vertices, GLsizeiptr size);

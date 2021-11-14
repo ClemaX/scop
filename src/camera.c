@@ -15,7 +15,7 @@ static inline void	camera_view(camera *cam)
 		cam->target[y] - cam->pos[y],
 		cam->target[z] - cam->pos[z]);
 
-	debug_vec3("pos", cam->pos);
+//	debug_vec3("pos", cam->pos);
 //	debug_vec3("target", cam->target);
 //	debug_vec3("front", front);
 //	debug_vec3("up", cam->up);
@@ -45,11 +45,6 @@ static inline void	camera_view(camera *cam)
 void	camera_init(camera *cam, float fov, float near, float far)
 {
 	matrix_perspective(cam->projection, fov, near, far);
-
-#ifdef DEBUG
-	debug("projection matrix: ");
-	matrix_print(&cam->projection[0][0], 4, 4, stderr);
-#endif
 
 	bzero(cam->pos, sizeof(cam->pos));
 	bzero(cam->target, sizeof(cam->target));

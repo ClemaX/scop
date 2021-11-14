@@ -33,6 +33,8 @@ SRCS = $(addprefix $(SRCDIR)/,\
 	object_cmd.c\
 	object_load.c\
 	object.c\
+	scop_draw.c\
+	scop_load.c\
 	scop.c\
 	shader.c\
 	vector.c\
