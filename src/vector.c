@@ -13,6 +13,11 @@ void	vec_cross(vec3 dst, const vec3 a, const vec3 b)
 	dst[z] = a[x] * b[y] - a[y] * b[x];
 }
 
+float vec_dot(const vec3 a, const vec3 b)
+{
+    return a[x] * b[x] + a[y] * b[y] + a[z] * b[z];
+}
+
 void	vec_normal(vec3 dst, GLfloat X, GLfloat Y, GLfloat Z)
 {
 	const GLfloat	mag = sqrtf(X * X + Y * Y + Z * Z);

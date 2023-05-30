@@ -1,4 +1,10 @@
+#include "camera.h"
 #include <scop.h>
+
+#include <string.h>
+#include <time.h>
+
+#include <logger.h>
 
 void	scop_draw(scop *scene)
 {
@@ -46,52 +52,125 @@ void		scop_terminate(scop *scene)
 	object_destroy(&scene->obj);
 }
 
-static inline int	scop_movement(scop *scene)
+static inline int	scop_movement(scop *scene, GLdouble delta)
 {
+	const float	distance = delta * SCOP_VELOCITY;
 	vec3	velocity = { 0, 0, 0 };
+	vec2	rotation = {0, 0};
 	int		moved;
 
-	if (glfwGetKey(scene->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (scene->input & INPUT_EXIT)
 		return -1;
 
-	if (glfwGetKey(scene->window, GLFW_KEY_W) == GLFW_PRESS)
-		velocity[z] += SCOP_VELOCITY;
-	if (glfwGetKey(scene->window, GLFW_KEY_S) == GLFW_PRESS)
-		velocity[z] -= SCOP_VELOCITY;
+	if (scene->input & INPUT_ZOOM_IN)
+		velocity[z] += distance;
+	if (scene->input & INPUT_ZOOM_OUT)
+		velocity[z] -= distance;
 
-	if (glfwGetKey(scene->window, GLFW_KEY_A) == GLFW_PRESS)
-		velocity[x] += SCOP_VELOCITY;
-	if (glfwGetKey(scene->window, GLFW_KEY_D) == GLFW_PRESS)
-		velocity[x] -= SCOP_VELOCITY;
+	if (scene->input & INPUT_PAN_UP)
+		velocity[y] += distance;
+	if (scene->input & INPUT_PAN_DOWN)
+		velocity[y] -= distance;
+	if (scene->input & INPUT_PAN_LEFT)
+		velocity[x] += distance;
+	if (scene->input & INPUT_PAN_RIGHT)
+		velocity[x] -= distance;
 
-	if (glfwGetKey(scene->window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		velocity[y] += SCOP_VELOCITY;
-	if (glfwGetKey(scene->window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		velocity[y] -= SCOP_VELOCITY;
+	if (scene->input & INPUT_ROTATE_UP)
+		rotation[y] += delta; //distance;
+	if (scene->input & INPUT_ROTATE_DOWN)
+		rotation[y] -= delta; //distance;
 
-	moved = velocity[x] != 0 || velocity[y] != 0 || velocity[z] != 0;
+	if (scene->input & INPUT_ROTATE_LEFT)
+		rotation[x] += delta; //distance;
+	if (scene->input & INPUT_ROTATE_RIGHT)
+		rotation[x] -= delta; //distance;
+
+	moved = velocity[x] || velocity[y] || velocity[z] || rotation[x] || rotation[y];
+
 	if (moved != 0)
-		camera_move_rel(&scene->cam, velocity);
+	{
+		vec3 cam_pos;
+
+		camera_rotate(&scene->cam, rotation[x], rotation[y]);
+		//camera_move_rel(&scene->cam, velocity);
+
+		camera_to_cartesian(&scene->cam, cam_pos);
+
+		map_point_position_set(&scene->map, POINT_CAMERA, (int[2]){cam_pos[x], cam_pos[z]});
+
+		map_draw(&scene->map);
+	}
 
 	return moved;
 }
 
+static inline int	keymap_get(const scop_keymap keymap, int key)
+{
+	unsigned	i;
+
+	for (i = 0; i < sizeof(scop_keymap) / sizeof(*keymap) && keymap[i] != key;
+		i++);
+
+	if (i == sizeof(scop_keymap) / sizeof(*keymap))
+		return -1;
+	return i;
+}
+
+static void	key_callback(GLFWwindow *window, int key, int scancode, int action,
+	int mods)
+{
+	scop	*scene;
+	int		scop_key;
+
+	(void)mods;
+	(void)scancode;
+	scene = glfwGetWindowUserPointer(window);
+
+	if (scene != NULL && (action == GLFW_RELEASE || action == GLFW_PRESS))
+	{
+		scop_key = keymap_get(scene->settings.keymap, key);
+		if (scop_key != -1)
+		{
+			/* debug("'%s' key state: %d, mods: %d, scancode: %d\n",
+				scop_keystrtab[scop_key], action, mods, scancode); */
+			if (action == GLFW_RELEASE)
+				scene->input &= ~(1 << scop_key);
+			else if (action == GLFW_PRESS)
+				scene->input |= (1 << scop_key);
+		}
+	}
+}
+
 int			scop_loop(scop *scene)
 {
-	int	movement;
+	int			movement;
+	GLdouble	delta;
+
+	glfwSetKeyCallback(scene->window, &key_callback);
 
 	do
 	{
+		// Reset timer
+		glfwSetTime(0);
+
+		// Draw scene
 		scop_draw(scene);
+
+		// Store time delta
+		delta = glfwGetTime();
 
 		do
 		{
-			glfwWaitEvents();
-			movement = scop_movement(scene);
+			glfwPollEvents();
+			if (scene->input != 0)
+				movement = scop_movement(scene, delta);
 		}
 		while (movement == 0);
 
 	} while (movement != -1);
+
+	glfwSetKeyCallback(scene->window, NULL);
 
 	return 0;
 }

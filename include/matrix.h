@@ -44,8 +44,6 @@ typedef dmat4x4	dmat4;
 
 void	matrix_perspective(mat4 dst, float fov, float near, float far);
 
-void	matrix_mul_point(mat4 *matrix, vec4 *point);
-
 void	matrix_mul4(mat4 dst, const mat4 a, const mat4 b);
 //void	matrix_mul3(mat3 *dst, const mat3 *a, const mat3 *b);
 //void	matrix_mul2(mat2 *dst, const mat2 *a, const mat2 *b);

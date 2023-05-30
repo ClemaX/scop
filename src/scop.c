@@ -1,3 +1,5 @@
+#include "map.h"
+#include "vector.h"
 #define _GNU_SOURCE
 #include <scop.h>
 
@@ -10,6 +12,21 @@
 #include <shader.h>
 
 #include <logger.h>
+
+const char *scop_keystrtab[] =
+{
+	[KEY_ZOOM_IN] = "zoom in",
+	[KEY_ZOOM_OUT] = "zoom out",
+	[KEY_PAN_UP] = "pan up",
+	[KEY_PAN_DOWN] = "pan down",
+	[KEY_PAN_LEFT] = "pan left",
+	[KEY_PAN_RIGHT] = "pan right",
+	[KEY_ROTATE_UP] = "rotate up",
+	[KEY_ROTATE_DOWN] = "rotate down",
+	[KEY_ROTATE_LEFT] = "rotate left",
+	[KEY_ROTATE_RIGHT] = "rotate right",
+	[KEY_EXIT] = "exit",
+};
 
 static int		glfw_init(const scop_settings *settings)
 {
@@ -142,15 +159,31 @@ int			scop_init(scop *scene)
 				ret = scop_shader_init(scene);
 				if (ret == 0)
 				{
-					const vec3	pos = { 0, 0, 5 };
-					const vec3	target = { 0, 0, 0 };
-					const vec3	up = { 0, 1, 0 };
+					const GLfloat	dist = 40;
+					const vec3		target = { 0, 0, 0 };
+					const vec3		up = { 0, 1, 0 };
+					vec3			cam_pos;
+
+					map_init(&scene->map);
 
 					vertex_array_object(&scene->vao_id);
 					vertex_buffer(&scene->vb_id);
 
-					camera_init(&scene->cam, 90.0f, 1.0f, 100.0f);
-					camera_lookat(&scene->cam, pos, target, up);
+					camera_init(&scene->cam, 90.0f, 0.1f, 100.0f);
+					camera_lookat(&scene->cam, up, target, dist);
+
+					map_point_symbol_set(&scene->map, POINT_TARGET, 'T');
+					map_point_symbol_set(&scene->map, POINT_CAMERA, 'C');
+
+					camera_to_cartesian(&scene->cam, cam_pos);
+
+					int cam_map_pos[2] = {cam_pos[x], cam_pos[z]};
+					int	target_map_pos[2] = {target[x], target[z]};;
+
+					map_point_position_set(&scene->map, POINT_TARGET, target_map_pos);
+					map_point_position_set(&scene->map, POINT_CAMERA, cam_map_pos);
+
+					//glEnable(GL_CULL_FACE);
 
 					glfwSetWindowSizeCallback(scene->window, &on_resize);
 

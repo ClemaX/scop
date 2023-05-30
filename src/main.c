@@ -7,6 +7,19 @@ int			main(void)
 {
 	scop	scene = (scop){
 		.settings = {
+			.keymap = {
+				[KEY_ZOOM_IN] = GLFW_KEY_W,
+				[KEY_ZOOM_OUT] = GLFW_KEY_S,
+				[KEY_PAN_UP] = GLFW_KEY_UP,
+				[KEY_PAN_DOWN] = GLFW_KEY_DOWN,
+				[KEY_PAN_LEFT] = GLFW_KEY_LEFT,
+				[KEY_PAN_RIGHT] = GLFW_KEY_RIGHT,
+				[KEY_ROTATE_UP] = GLFW_KEY_SPACE,
+				[KEY_ROTATE_DOWN] = GLFW_KEY_LEFT_SHIFT,
+				[KEY_ROTATE_LEFT] = GLFW_KEY_A,
+				[KEY_ROTATE_RIGHT] = GLFW_KEY_D,
+				[KEY_EXIT] = GLFW_KEY_ESCAPE,
+			},
 			.gl_major = 4,
 			.gl_minor = 1,
 			.anti_aliasing = 4,
@@ -20,7 +33,7 @@ int			main(void)
 
 	if (ret == 0)
 	{
-		ret = scop_load_obj_file(&scene, "./resources/triangle.obj");
+		ret = scop_load_obj_file(&scene, "./resources/square.obj");
 
 #ifdef DEBUG
 		object_write(&scene.obj, stderr);
