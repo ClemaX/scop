@@ -20,7 +20,7 @@ void	scop_draw(scop *scene)
 	camera_project(&scene->cam, mvp, scene->obj.model);
 
 	glUniformMatrix4fv(scene->shader.mvp_loc, 1, GL_FALSE, &mvp[0][0]);
-	glUniform2ui(scene->shader.res_loc, scene->settings.width, scene->settings.height);
+	glUniform2f(scene->shader.res_loc, scene->settings.width, scene->settings.height);
 //		gl_perror();
 
 	glEnableVertexAttribArray(ATTRIB_VERTEX);
