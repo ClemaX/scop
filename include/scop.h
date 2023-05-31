@@ -1,10 +1,9 @@
 #pragma once
 
-#include "map.h"
 #include <window.h>
 #include <camera.h>
-
 #include <object.h>
+#include <shader.h>
 
 #ifdef DEBUG
 # define SCOP_WINDOW_NAME "scop"
@@ -26,7 +25,8 @@ typedef enum	attrib
 	ATTRIB_FRAGMENT = 1,
 }				attrib;
 
-#define NAME_MVP "MVP"
+#define UNIFORM_MVP "MVP"
+#define UNIFORM_RES "RES"
 
 #define INPUT_ZOOM_IN		0b0000000000000001
 #define INPUT_ZOOM_OUT		0b0000000000000010
@@ -80,16 +80,14 @@ typedef struct	scop
 	scop_settings	settings;
 	camera			cam;
 	object			obj;
-	GLuint			shader_id;
-	GLint			mvp_loc;
+	shader			shader;
 	GLuint			vao_id;
 	GLuint			vb_id;
 	keystates		input;
 	GLFWwindow		*window;
-	map				map;
 }				scop;
 
-typedef void 	(*scop_resize_cb)(scop *scop, GLuint width, GLuint height);
+typedef void	(*scop_resize_cb)(scop *scop, GLuint width, GLuint height);
 
 
 int		scop_init(scop *scene);

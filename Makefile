@@ -28,7 +28,6 @@ SRCS = $(addprefix $(SRCDIR)/,\
 	face.c\
 	file.c\
 	main.c\
-	map.c\
 	matrix.c\
 	object_cmd_op.c\
 	object_cmd.c\

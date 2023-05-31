@@ -1,5 +1,3 @@
-#include "map.h"
-#include "vector.h"
 #define _GNU_SOURCE
 #include <scop.h>
 
@@ -124,19 +122,23 @@ static inline int	scop_shader_init(scop *scene)
 {
 	int	ret;
 
-	scene->shader_id = shader_load(scene->settings.vertex_shader,
+	scene->shader.id = shader_load(scene->settings.vertex_shader,
 		scene->settings.fragment_shader);
 
-	ret = -(scene->shader_id == 0);
+	ret = -(scene->shader.id == 0);
 	if (ret == 0)
 	{
-		scene->mvp_loc = glGetUniformLocation(scene->shader_id, NAME_MVP);
+		scene->shader.mvp_loc = glGetUniformLocation(scene->shader.id,
+			UNIFORM_MVP);
 
-		ret = -(scene->mvp_loc == -1);
+		scene->shader.res_loc = glGetUniformLocation(scene->shader.id,
+			UNIFORM_RES);
+
+		ret = -(scene->shader.mvp_loc == -1);
 		if (ret != 0)
 		{
-			glDeleteShader(scene->shader_id);
-			scene->shader_id = 0;
+			glDeleteShader(scene->shader.id);
+			scene->shader.id = 0;
 		}
 	}
 
@@ -162,26 +164,12 @@ int			scop_init(scop *scene)
 					const GLfloat	dist = 40;
 					const vec3		target = { 0, 0, 0 };
 					const vec3		up = { 0, 1, 0 };
-					vec3			cam_pos;
-
-					map_init(&scene->map);
 
 					vertex_array_object(&scene->vao_id);
 					vertex_buffer(&scene->vb_id);
 
 					camera_init(&scene->cam, 90.0f, 0.1f, 100.0f);
 					camera_lookat(&scene->cam, up, target, dist);
-
-					map_point_symbol_set(&scene->map, POINT_TARGET, 'T');
-					map_point_symbol_set(&scene->map, POINT_CAMERA, 'C');
-
-					camera_to_cartesian(&scene->cam, cam_pos);
-
-					int cam_map_pos[2] = {cam_pos[x], cam_pos[z]};
-					int	target_map_pos[2] = {target[x], target[z]};;
-
-					map_point_position_set(&scene->map, POINT_TARGET, target_map_pos);
-					map_point_position_set(&scene->map, POINT_CAMERA, cam_map_pos);
 
 					//glEnable(GL_CULL_FACE);
 

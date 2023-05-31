@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include <matrix.h>
 
 /*
@@ -8,7 +10,7 @@ typedef enum	camera_mode
 	CAM_PERSPECTIVE,
 	CAM_ORTHOGRAPHIC,
 }				camera_mode;
- */
+d*/
 
 typedef struct	camera
 {
@@ -19,6 +21,7 @@ typedef struct	camera
 	GLfloat	distance;
 	GLfloat	theta;
 	GLfloat	phi;
+	bool	view_dirty;
 }				camera;
 
 
@@ -31,6 +34,4 @@ void	camera_lookat(camera *cam, const vec3 up,
 	const vec3 target, GLfloat distance);
 void	camera_rotate(camera *cam, GLfloat d_theta, GLfloat d_phi);
 
-void	camera_to_cartesian(const camera *cam, vec3 pos);
-
-void	camera_project(const camera *cam, mat4 mvp, const mat4 model);
+void	camera_project(camera *cam, mat4 mvp, const mat4 model);

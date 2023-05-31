@@ -27,5 +27,4 @@ typedef GLdouble	dvec4[4];
 
 void	vec_cross(vec3 dst, const vec3 a, const vec3 b);
 float	vec_dot(const vec3 a, const vec3 b);
-void	vec_normal(vec3 dst, GLfloat X, GLfloat Y, GLfloat Z);
 void	vec_normalize(vec3 dst, const vec3 src);

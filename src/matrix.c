@@ -9,16 +9,16 @@
 
 void		matrix_perspective(mat4 dst, float fov, float near, float far)
 {
-	const GLfloat		scale = 1.0f / tanf(fov / 2.0f * (M_PI / 180.0f));
+	const GLfloat	scale = 1.0f / tanf(fov / 2.0f * (M_PI / 180.0f));
 
-	const mat4 mat = {
+	const mat4		projection = {
 		{scale,	0,		0,								0},
 		{0,		scale,	0,								0},
 		{0,		0,		far / (far - near),				1},
 		{0,		0,		-(far * near) / (far - near),   0},
 	};
 
-	memcpy(dst, mat, sizeof(mat4));
+	memcpy(dst, projection, sizeof(mat4));
 }
 
 void		matrix_mul4_vec(vec4 dst, const mat4 mat, const vec3 point)

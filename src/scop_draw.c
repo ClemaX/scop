@@ -1,4 +1,4 @@
-#include "camera.h"
+#include <vector.h>
 #include <scop.h>
 
 #include <string.h>
@@ -14,12 +14,13 @@ void	scop_draw(scop *scene)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// Use shader
-	glUseProgram(scene->shader_id);
+	glUseProgram(scene->shader.id);
 
 	// Apply MVP
 	camera_project(&scene->cam, mvp, scene->obj.model);
 
-	glUniformMatrix4fv(scene->mvp_loc, 1, GL_FALSE, &mvp[0][0]);
+	glUniformMatrix4fv(scene->shader.mvp_loc, 1, GL_FALSE, &mvp[0][0]);
+	glUniform2ui(scene->shader.res_loc, scene->settings.width, scene->settings.height);
 //		gl_perror();
 
 	glEnableVertexAttribArray(ATTRIB_VERTEX);
@@ -43,10 +44,10 @@ void	scop_draw(scop *scene)
 
 void		scop_terminate(scop *scene)
 {
-	if (scene->shader_id != 0)
+	if (scene->shader.id != 0)
 	{
-		glDeleteShader(scene->shader_id);
-		scene->shader_id = 0;
+		glDeleteShader(scene->shader.id);
+		scene->shader.id = 0;
 	}
 	glfwTerminate();
 	object_destroy(&scene->obj);
@@ -55,9 +56,10 @@ void		scop_terminate(scop *scene)
 static inline int	scop_movement(scop *scene, GLdouble delta)
 {
 	const float	distance = delta * SCOP_VELOCITY;
-	vec3	velocity = { 0, 0, 0 };
-	vec2	rotation = {0, 0};
-	int		moved;
+	vec3		velocity = {0, 0, 0};
+	vec2		rotation = {0, 0};
+	bool		moved;
+	bool		rotated;
 
 	if (scene->input & INPUT_EXIT)
 		return -1;
@@ -77,32 +79,24 @@ static inline int	scop_movement(scop *scene, GLdouble delta)
 		velocity[x] -= distance;
 
 	if (scene->input & INPUT_ROTATE_UP)
-		rotation[y] += delta; //distance;
+		rotation[y] += distance;
 	if (scene->input & INPUT_ROTATE_DOWN)
-		rotation[y] -= delta; //distance;
+		rotation[y] -= distance;
 
 	if (scene->input & INPUT_ROTATE_LEFT)
-		rotation[x] += delta; //distance;
+		rotation[x] += distance;
 	if (scene->input & INPUT_ROTATE_RIGHT)
-		rotation[x] -= delta; //distance;
+		rotation[x] -= distance;
 
-	moved = velocity[x] || velocity[y] || velocity[z] || rotation[x] || rotation[y];
+	moved = velocity[x] || velocity[y] || velocity[z];
+	rotated = rotation[x] || rotation[y];
 
-	if (moved != 0)
-	{
-		vec3 cam_pos;
-
+	if (moved)
+		camera_move_rel(&scene->cam, velocity);
+	if (rotated)
 		camera_rotate(&scene->cam, rotation[x], rotation[y]);
-		//camera_move_rel(&scene->cam, velocity);
 
-		camera_to_cartesian(&scene->cam, cam_pos);
-
-		map_point_position_set(&scene->map, POINT_CAMERA, (int[2]){cam_pos[x], cam_pos[z]});
-
-		map_draw(&scene->map);
-	}
-
-	return moved;
+	return moved || rotated;
 }
 
 static inline int	keymap_get(const scop_keymap keymap, int key)
