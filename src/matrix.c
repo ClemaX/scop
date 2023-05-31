@@ -66,17 +66,17 @@ void		matrix_identity4(mat4 mat, GLfloat value)
 
 void		matrix_print(const GLfloat *mat, GLuint n, GLuint m, FILE *file)
 {
-	fprintf(file, "{ ");
+	fprintf(file, "{\n");
 
 	for (GLuint i = 0; i < m; i++)
 	{
-		fprintf(file, "{ ");
+		fprintf(file, "\t{ ");
 		fprintf(file, "%f", mat[i * n + 0]);
 		for (GLuint j = 1; j < n; j++)
 		{
 			fprintf(file, ", %f", mat[i * n + j]);
 		}
-		fprintf(file, " }");
+		fprintf(file, " }\n");
 	}
-	fprintf(file, " }\n");
+	fprintf(file, "}\n");
 }
