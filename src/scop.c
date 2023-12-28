@@ -161,7 +161,7 @@ int			scop_init(scop *scene)
 				ret = scop_shader_init(scene);
 				if (ret == 0)
 				{
-					const GLfloat	dist = 40;
+					const GLfloat	dist = 10;
 					const vec3		target = { 0, 0, 0 };
 					const vec3		up = { 0, 1, 0 };
 
