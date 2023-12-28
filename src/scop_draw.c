@@ -65,36 +65,36 @@ static inline int	scop_movement(scop *scene, GLdouble delta)
 		return -1;
 
 	if (scene->input & INPUT_ZOOM_IN)
-		velocity[z] += distance;
+		velocity[_v_z] += distance;
 	if (scene->input & INPUT_ZOOM_OUT)
-		velocity[z] -= distance;
+		velocity[_v_z] -= distance;
 
 	if (scene->input & INPUT_PAN_UP)
-		velocity[y] += distance;
+		velocity[_v_y] += distance;
 	if (scene->input & INPUT_PAN_DOWN)
-		velocity[y] -= distance;
+		velocity[_v_y] -= distance;
 	if (scene->input & INPUT_PAN_LEFT)
-		velocity[x] += distance;
+		velocity[_v_x] += distance;
 	if (scene->input & INPUT_PAN_RIGHT)
-		velocity[x] -= distance;
+		velocity[_v_x] -= distance;
 
 	if (scene->input & INPUT_ROTATE_UP)
-		rotation[y] += distance;
+		rotation[_v_y] += distance;
 	if (scene->input & INPUT_ROTATE_DOWN)
-		rotation[y] -= distance;
+		rotation[_v_y] -= distance;
 
 	if (scene->input & INPUT_ROTATE_LEFT)
-		rotation[x] += distance;
+		rotation[_v_x] += distance;
 	if (scene->input & INPUT_ROTATE_RIGHT)
-		rotation[x] -= distance;
+		rotation[_v_x] -= distance;
 
-	moved = velocity[x] || velocity[y] || velocity[z];
-	rotated = rotation[x] || rotation[y];
+	moved = velocity[_v_x] || velocity[_v_y] || velocity[_v_z];
+	rotated = rotation[_v_x] || rotation[_v_y];
 
 	if (moved)
 		camera_move_rel(&scene->cam, velocity);
 	if (rotated)
-		camera_rotate(&scene->cam, rotation[x], rotation[y]);
+		camera_rotate(&scene->cam, rotation[_v_x], rotation[_v_y]);
 
 	return moved || rotated;
 }
@@ -154,14 +154,15 @@ int			scop_loop(scop *scene)
 		// Store time delta
 		delta = glfwGetTime();
 
+		movement = 0;
 		do
 		{
 			glfwPollEvents();
+
 			if (scene->input != 0)
 				movement = scop_movement(scene, delta);
 		}
 		while (movement == 0);
-
 	} while (movement != -1);
 
 	glfwSetKeyCallback(scene->window, NULL);

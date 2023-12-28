@@ -69,7 +69,7 @@ int							object_v(object *object, const char *arguments)
 {
 	vec4	vertex = {0, 0, 0, 1};
 	int		ret = sscanf(arguments, "%f %f %f %f",
-		vertex + x, vertex + y, vertex + z, vertex + w);
+		vertex + _v_x, vertex + _v_y, vertex + _v_z, vertex + _v_w);
 
 	ret = ret < 3;
 	if (ret == 0)
@@ -82,7 +82,7 @@ int							object_vt(object *object, const char *arguments)
 {
 	vec3	vertex = {0, 0, 0};
 	int		ret = sscanf(arguments, "%f %f %f",
-		vertex + x, vertex + y, vertex + z);
+		vertex + _v_x, vertex + _v_y, vertex + _v_z);
 
 	ret = ret < 1;
 	if (ret == 0)
@@ -95,7 +95,7 @@ int							object_vn(object *object, const char *arguments)
 {
 	vec3	vertex = {0, 0, 0};
 	int		ret = sscanf(arguments, "%f %f %f",
-		vertex + x, vertex + y, vertex + z);
+		vertex + _v_x, vertex + _v_y, vertex + _v_z);
 
 	ret = ret < 1;
 	if (ret == 0)

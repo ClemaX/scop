@@ -4,9 +4,9 @@
 
 #ifdef DEBUG
 # define debug_vec2(name, vec) fprintf(stderr, "%s: %f %f\n",\
-	name, vec[x], vec[y])
+	name, vec[_v_x], vec[_v_y])
 # define debug_vec3(name, vec) fprintf(stderr, "%s: %f %f %f\n",\
-	name, vec[x], vec[y], vec[z])
+	name, vec[_v_x], vec[_v_y], vec[_v_z])
 # define debug(...) fprintf(stderr, __VA_ARGS__)
 # define info(...) fprintf(stderr, __VA_ARGS__)
 # define error(...) fprintf(stderr, __VA_ARGS__)

@@ -14,8 +14,8 @@ void		matrix_perspective(mat4 dst, float fov, float near, float far)
 	const mat4		projection = {
 		{scale,	0,		0,								0},
 		{0,		scale,	0,								0},
-		{0,		0,		far / (far - near),				1},
-		{0,		0,		-(far * near) / (far - near),   0},
+		{0,		0,		(near + far) / (near - far),	-1},
+		{0,		0,		2 * near * far / (near - far),   0},
 	};
 
 	memcpy(dst, projection, sizeof(mat4));
@@ -23,10 +23,10 @@ void		matrix_perspective(mat4 dst, float fov, float near, float far)
 
 void		matrix_mul4_vec(vec4 dst, const mat4 mat, const vec3 point)
 {
-	dst[x] = point[x] * mat[x][x] + point[y] * mat[y][x] + point[z] * mat[z][x] + point[w] * mat[w][x];
-	dst[y] = point[x] * mat[x][y] + point[y] * mat[y][y] + point[z] * mat[z][y] + point[w] * mat[w][y];
-	dst[z] = point[x] * mat[x][z] + point[y] * mat[y][z] + point[z] * mat[z][z] + point[w] * mat[w][z];
-	dst[w] = point[x] * mat[x][w] + point[y] * mat[y][w] + point[z] * mat[z][w] + point[w] * mat[w][w];
+	dst[_v_x] = point[_v_x] * mat[_v_x][_v_x] + point[_v_y] * mat[_v_y][_v_x] + point[_v_z] * mat[_v_z][_v_x] + point[_v_w] * mat[_v_w][_v_x];
+	dst[_v_y] = point[_v_x] * mat[_v_x][_v_y] + point[_v_y] * mat[_v_y][_v_y] + point[_v_z] * mat[_v_z][_v_y] + point[_v_w] * mat[_v_w][_v_y];
+	dst[_v_z] = point[_v_x] * mat[_v_x][_v_z] + point[_v_y] * mat[_v_y][_v_z] + point[_v_z] * mat[_v_z][_v_z] + point[_v_w] * mat[_v_w][_v_z];
+	dst[_v_w] = point[_v_x] * mat[_v_x][_v_w] + point[_v_y] * mat[_v_y][_v_w] + point[_v_z] * mat[_v_z][_v_w] + point[_v_w] * mat[_v_w][_v_w];
 }
 
 static void	matrix_mul(GLfloat *dst, const GLfloat *a, const GLfloat *b,
@@ -36,12 +36,10 @@ static void	matrix_mul(GLfloat *dst, const GLfloat *a, const GLfloat *b,
 	{
         for (GLuint j = 0; j < p; j++)
 		{
-            GLfloat sum = 0.0;
+            GLfloat sum = 0;
 
             for (GLuint k = 0; k < m; k++)
-			{
                 sum += a[i * m + k] * b[k * p + j];
-            }
 
             dst[i * p + j] = sum;
         }

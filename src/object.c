@@ -67,11 +67,11 @@ int			object_write(object *object, FILE *file)
 		const int	o = i * sizeof(vec4) / sizeof(*object->v.data);
 
 		fprintf(file, "v %f %f %f",
-			object->v.data[o + x], object->v.data[o + y],
-			object->v.data[o + z]);
+			object->v.data[o + _v_x], object->v.data[o + _v_y],
+			object->v.data[o + _v_z]);
 
-		if (object->v.data[o + w] != 1.0f)
-			fprintf(file, " %f", object->v.data[o + w]);
+		if (object->v.data[o + _v_w] != 1.0f)
+			fprintf(file, " %f", object->v.data[o + _v_w]);
 
 		fprintf(file, "\n");
 	}
@@ -81,8 +81,8 @@ int			object_write(object *object, FILE *file)
 		const int	o = i * sizeof(vec3) / sizeof(*object->v.data);
 
 		fprintf(file, "vn %f %f %f\n",
-			object->vn.data[o + x], object->vn.data[o + y],
-			object->vn.data[o + z]);
+			object->vn.data[o + _v_x], object->vn.data[o + _v_y],
+			object->vn.data[o + _v_z]);
 	}
 
 	for (GLsizeiptr i = 0; i < object->vt.count; i++)
@@ -90,10 +90,10 @@ int			object_write(object *object, FILE *file)
 		const int	o = i * sizeof(vec3) / sizeof(*object->v.data);
 
 		fprintf(file, "vt %f %f",
-			object->vt.data[o + x], object->vt.data[o + y]);
+			object->vt.data[o + _v_x], object->vt.data[o + _v_y]);
 
-		if (object->vt.data[o + z] != 0.0f)
-			fprintf(file, " %f", object->vt.data[o + z]);
+		if (object->vt.data[o + _v_z] != 0.0f)
+			fprintf(file, " %f", object->vt.data[o + _v_z]);
 
 		fprintf(file, "\n");
 	}

@@ -2,10 +2,10 @@
 
 #include <GL/glew.h>
 
-#define x 0
-#define y 1
-#define z 2
-#define w 3
+#define _v_x 0
+#define _v_y 1
+#define _v_z 2
+#define _v_w 3
 
 typedef GLboolean	bvec2[2];
 typedef GLint		ivec2[2];
