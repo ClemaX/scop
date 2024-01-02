@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -49,7 +48,10 @@ int	object_load(object *object, FILE *file)
 	}
 
 	if (ret != 0)
+	{
+		error("object_load: Could not parse obj file!\n");
 		object_destroy(object);
+	}
 
 	free(line);
 
