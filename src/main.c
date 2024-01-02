@@ -38,7 +38,7 @@ int			main(void)
 
 	if (ret == 0)
 	{
-		ret = scop_load_obj_file(&scene, "./resources/triangle.obj");
+		ret = scop_load_obj_file(&scene, "./resources/square.obj");
 
 		if (ret == 0)
 		{
