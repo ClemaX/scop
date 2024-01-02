@@ -81,7 +81,7 @@ static inline int	glew_init()
 
 static void			on_resize(GLFWwindow* window, int width, int height)
 {
-	scop	*scene;
+	scop_scene	*scene;
 	float	aspect;
 
 	glViewport(0, 0, width, height);
@@ -103,7 +103,7 @@ static void			on_resize(GLFWwindow* window, int width, int height)
 	}
 }
 
-static inline int	scop_window_init(scop *scene)
+static inline int	scop_window_init(scop_scene *scene)
 {
 	int	ret;
 
@@ -124,7 +124,7 @@ static inline int	scop_window_init(scop *scene)
 	return ret;
 }
 
-static inline int	scop_shader_init(scop *scene)
+static inline int	scop_shader_init(scop_scene *scene)
 {
 	int	ret;
 
@@ -151,7 +151,7 @@ static inline int	scop_shader_init(scop *scene)
 	return ret;
 }
 
-int			scop_init(scop *scene)
+int			scop_init(scop_scene *scene)
 {
 	int			ret;
 
@@ -171,20 +171,19 @@ int			scop_init(scop *scene)
 					const vec3		target = { 0, 0, 0 };
 					const vec3		up = { 0, 1, 0 };
 
-					vertex_array_object(&scene->vao_id);
-					vertex_buffer(&scene->vb_id);
+					vertex_array_init(&scene->vao_id);
+					vertex_buffer_init(&scene->vbo_id);
+					vertex_buffer_init(&scene->vibo_id);
 
 					camera_init(&scene->cam, 90.0f, 0.1f, 100.0f);
 					camera_lookat(&scene->cam, up, target, dist);
 
-					//glEnable(GL_CULL_FACE);
+					glEnable(GL_CULL_FACE);
 
 					glfwSetWindowSizeCallback(scene->window, &on_resize);
 
 					glfwGetWindowSize(scene->window, &scene->settings.width,
 						&scene->settings.height);
-
-					scop_draw(scene);
 				}
 			}
 

@@ -7,7 +7,7 @@
 
 int			main(void)
 {
-	scop	scene = (scop){
+	scop_scene	scene = (scop_scene){
 		.settings = {
 			.keymap = {
 				[KEY_ZOOM_IN] = GLFW_KEY_W,

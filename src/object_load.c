@@ -27,8 +27,17 @@ int	object_load(object *object, FILE *file)
 		len = getline(&line, &size, file);
 		if (len > 0)
 		{
-			if (line[len - 1] == '\n')
-				line[--len] = '\0';
+			char *end = strchr(line, '#');			
+			
+			if (end == NULL)
+				end = strchr(line, '\n');
+
+			if (end != NULL)
+			{
+				*end = '\0';
+				len = end - line;
+			}
+
 			ret = object_exec(object, line);
 		}
 	} while (len != -1 && ret == 0);

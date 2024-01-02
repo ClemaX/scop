@@ -75,26 +75,28 @@ typedef struct	scop_settings
 	const char	*vertex_shader;
 }				scop_settings;
 
-typedef struct	scop
+typedef struct	scop_scene
 {
 	scop_settings	settings;
 	camera			cam;
 	object			obj;
 	shader			shader;
 	GLuint			vao_id;
-	GLuint			vb_id;
+	GLuint			vbo_id;
+	GLuint			vibo_id;
+	GLsizei			vertex_index_count;
 	keystates		input;
 	GLFWwindow		*window;
-}				scop;
+}				scop_scene;
 
-typedef void	(*scop_resize_cb)(scop *scop, GLuint width, GLuint height);
+typedef void	(*scop_resize_cb)(scop_scene *scene, GLuint width, GLuint height);
 
 
-int		scop_init(scop *scene);
-void	scop_terminate(scop *scene);
+int		scop_init(scop_scene *scene);
+void	scop_terminate(scop_scene *scene);
 
-void	scop_draw(scop *scene);
-int		scop_loop(scop *scene);
+void	scop_draw(scop_scene *scene);
+int		scop_loop(scop_scene *scene);
 
-int		scop_load_obj_raw(scop *scene, const void *vertices, GLsizeiptr size);
-int		scop_load_obj_file(scop *scene, const char *file_path);
+int		scop_load_obj_raw(scop_scene *scene, const void *vertices, GLsizeiptr size);
+int		scop_load_obj_file(scop_scene *scene, const char *file_path);

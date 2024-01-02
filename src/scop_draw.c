@@ -6,7 +6,7 @@
 
 #include <logger.h>
 
-void	scop_draw(scop *scene)
+void	scop_draw(scop_scene *scene)
 {
 	mat4	mvp;
 
@@ -21,20 +21,24 @@ void	scop_draw(scop *scene)
 
 	glUniformMatrix4fv(scene->shader.mvp_loc, 1, GL_FALSE, &mvp[0][0]);
 	glUniform2f(scene->shader.res_loc, scene->settings.width, scene->settings.height);
-//		gl_perror();
 
 	glEnableVertexAttribArray(ATTRIB_VERTEX);
 
 	glVertexAttribPointer(
-		ATTRIB_VERTEX,	// attribute
-		4,				// vertex size
-		GL_FLOAT,		// data type
-		GL_FALSE,		// normalized
-		0,				// stride
-		(void*)0		// array buffer offset
+		ATTRIB_VERTEX,	// Attribute
+		4,				// Vertex size
+		GL_FLOAT,		// Data type
+		GL_FALSE,		// Normalized
+		0,				// Stride
+		(void*)0		// Array buffer offset
 	);
 
-	glDrawArrays(GL_TRIANGLES, 0, scene->obj.v.count);
+	glDrawElements(
+		GL_TRIANGLES,				// Element type
+		scene->vertex_index_count,	// Vertex index count
+		GL_UNSIGNED_BYTE,			// Vertex index data type
+		(void*)0					// Vertex indices offset
+	);
 
 	glDisableVertexAttribArray(ATTRIB_VERTEX);
 
@@ -42,7 +46,7 @@ void	scop_draw(scop *scene)
 	glfwSwapBuffers(scene->window);
 }
 
-void		scop_terminate(scop *scene)
+void		scop_terminate(scop_scene *scene)
 {
 	if (scene->shader.id != 0)
 	{
@@ -53,7 +57,7 @@ void		scop_terminate(scop *scene)
 	object_destroy(&scene->obj);
 }
 
-static inline int	scop_movement(scop *scene, GLdouble delta)
+static inline int	scop_movement(scop_scene *scene, GLdouble delta)
 {
 	const float	distance = delta * SCOP_VELOCITY;
 	vec3		velocity = {0, 0, 0};
@@ -114,7 +118,7 @@ static inline int	keymap_get(const scop_keymap keymap, int key)
 static void	key_callback(GLFWwindow *window, int key, int scancode, int action,
 	int mods)
 {
-	scop	*scene;
+	scop_scene	*scene;
 	int		scop_key;
 
 	(void)mods;
@@ -136,7 +140,7 @@ static void	key_callback(GLFWwindow *window, int key, int scancode, int action,
 	}
 }
 
-int			scop_loop(scop *scene)
+int			scop_loop(scop_scene *scene)
 {
 	int			movement;
 	GLdouble	delta;

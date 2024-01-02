@@ -5,8 +5,8 @@
 typedef struct	face_cnt
 {
 	face		*data;
-	GLsizeiptr	size;
-	GLsizeiptr	count;
+	GLsizei		size;
+	GLsizei		count;
 }				face_cnt;
 
 int		face_cnt_init(face_cnt *container, GLsizeiptr size);

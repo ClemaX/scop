@@ -7,13 +7,14 @@
 
 #include <logger.h>
 
-static void	scop_buffer_obj(scop *scene)
+static void	scop_buffer_obj(scop_scene *scene)
 {
-	vertex_buffer_data(scene->vb_id, &scene->obj.v, GL_STATIC_DRAW);
+	vertex_buffer_load(scene->vbo_id, &scene->obj.v, GL_STATIC_DRAW);
+	scene->vertex_index_count = vertex_index_buffer_load(scene->vibo_id, &scene->obj.f, GL_STATIC_DRAW);
 	scop_draw(scene);
 }
 
-int			scop_load_obj_raw(scop *scene, const void *vertices, GLsizeiptr size)
+int			scop_load_obj_raw(scop_scene *scene, const void *vertices, GLsizeiptr size)
 {
 	int	ret;
 
@@ -25,7 +26,7 @@ int			scop_load_obj_raw(scop *scene, const void *vertices, GLsizeiptr size)
 	return ret;
 }
 
-int			scop_load_obj_file(scop *scene, const char *file_path)
+int			scop_load_obj_file(scop_scene *scene, const char *file_path)
 {
 	FILE	*file;
 	int		ret;

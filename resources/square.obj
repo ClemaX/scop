@@ -1,13 +1,29 @@
-v -1 -1  0 # A
-v  1  1  0 # B
-v -1  1  0 # C
+#v -1 -1  0 # A
+#v  1  1  0 # B
+#v -1  1  0 # C
 
 # C .. B
 # A .
 
-v  1 -1  0 # A
-v  1  1  0 # B
-v -1 -1  0 # C
+#v  1 -1  0 # D
+#v  1  1  0 # B
+#v -1 -1  0 # A
 
-# C .. B
-#    . A
+#    . B
+# A .. D
+
+
+v -1 -1  0 # A
+v  1 -1  0 # B
+v  1  1  0 # C
+v -1  1  0 # D
+
+# D .. C
+# A .. B
+
+
+f 1 2 3 4 # A B C D
+
+# Should map to flat triangle indices:
+# A B C
+# A C D
