@@ -76,6 +76,13 @@ void	camera_init(camera *cam, float fov, float near, float far)
 	cam->view_dirty = true;
 }
 
+void	camera_set_aspect(camera *cam, float aspect_ratio)
+{
+	const GLfloat	y_scale = cam->projection[1][1];
+
+	cam->projection[0][0] = y_scale / aspect_ratio;
+}
+
 /*
 void	camera_move(camera *cam, const vec3 new_pos)
 {

@@ -27,6 +27,7 @@ typedef struct	camera
 
 void	camera_init(camera *cam, float fov, float near, float far);
 
+void	camera_set_aspect(camera *cam, float aspect_ratio);
 void	camera_move(camera *cam, const vec3 new_pos);
 void	camera_move_rel(camera *cam, const vec3 velocity);
 void	camera_target(camera *cam, const vec3 new_target);
