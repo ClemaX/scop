@@ -82,9 +82,10 @@ static inline int	glew_init()
 static void			on_resize(GLFWwindow* window, int width, int height)
 {
 	scop	*scene;
+	float	aspect;
 
 	glViewport(0, 0, width, height);
-	debug("Resizing viewport to %dx%d!\n", width, height);
+	debug("Resized viewport to %dx%d!\n", width, height);
 
 	scene = glfwGetWindowUserPointer(window);
 	if (scene != NULL)
@@ -92,6 +93,12 @@ static void			on_resize(GLFWwindow* window, int width, int height)
 		debug("Resizing scene...\n");
 		scene->settings.width = width;
 		scene->settings.height = height;
+
+		aspect = (float)width / (float)height;
+
+		debug("Setting camera projection for aspect ratio '%f'...\n", aspect);
+		camera_set_aspect(&scene->cam, aspect);
+
 		scop_draw(scene);
 	}
 }
