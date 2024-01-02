@@ -121,8 +121,8 @@ void	camera_rotate(camera *cam, GLfloat d_theta, GLfloat d_phi)
 		cam->phi += 2 * M_PI;
 	}
 
-	debug("theta:	%f\n", cam->theta);
-	debug("phi:		%f\n", cam->phi);
+	debug("theta: % f\n", cam->theta);
+	debug("phi:   % f\n", cam->phi);
 
 	cam->view_dirty = true;
 }
