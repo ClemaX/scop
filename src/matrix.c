@@ -23,10 +23,29 @@ void		matrix_perspective(mat4 dst, float fov, float near, float far)
 
 void		matrix_mul4_vec(vec4 dst, const mat4 mat, const vec3 point)
 {
-	dst[_v_x] = point[_v_x] * mat[_v_x][_v_x] + point[_v_y] * mat[_v_y][_v_x] + point[_v_z] * mat[_v_z][_v_x] + point[_v_w] * mat[_v_w][_v_x];
-	dst[_v_y] = point[_v_x] * mat[_v_x][_v_y] + point[_v_y] * mat[_v_y][_v_y] + point[_v_z] * mat[_v_z][_v_y] + point[_v_w] * mat[_v_w][_v_y];
-	dst[_v_z] = point[_v_x] * mat[_v_x][_v_z] + point[_v_y] * mat[_v_y][_v_z] + point[_v_z] * mat[_v_z][_v_z] + point[_v_w] * mat[_v_w][_v_z];
-	dst[_v_w] = point[_v_x] * mat[_v_x][_v_w] + point[_v_y] * mat[_v_y][_v_w] + point[_v_z] * mat[_v_z][_v_w] + point[_v_w] * mat[_v_w][_v_w];
+	dst[_v_x] =
+		point[_v_x] * mat[_v_x][_v_x] +
+		point[_v_y] * mat[_v_y][_v_x] +
+		point[_v_z] * mat[_v_z][_v_x] +
+		point[_v_w] * mat[_v_w][_v_x];
+
+	dst[_v_y] =
+		point[_v_x] * mat[_v_x][_v_y] +
+		point[_v_y] * mat[_v_y][_v_y] +
+		point[_v_z] * mat[_v_z][_v_y] +
+		point[_v_w] * mat[_v_w][_v_y];
+
+	dst[_v_z] =
+		point[_v_x] * mat[_v_x][_v_z] +
+		point[_v_y] * mat[_v_y][_v_z] +
+		point[_v_z] * mat[_v_z][_v_z] +
+		point[_v_w] * mat[_v_w][_v_z];
+
+	dst[_v_w] =
+		point[_v_x] * mat[_v_x][_v_w] +
+		point[_v_y] * mat[_v_y][_v_w] +
+		point[_v_z] * mat[_v_z][_v_w] +
+		point[_v_w] * mat[_v_w][_v_w];
 }
 
 static void	matrix_mul(GLfloat *dst, const GLfloat *a, const GLfloat *b,
@@ -57,9 +76,7 @@ void		matrix_mul4(mat4 dst, const mat4 a, const mat4 b)
 void		matrix_identity4(mat4 mat, GLfloat value)
 {
 	for (GLuint i = 0; i < 4; i++)
-	{
 		mat[i][i] = value;
-	}
 }
 
 void		matrix_print(const GLfloat *mat, GLuint n, GLuint m, FILE *file)
@@ -69,11 +86,11 @@ void		matrix_print(const GLfloat *mat, GLuint n, GLuint m, FILE *file)
 	for (GLuint i = 0; i < m; i++)
 	{
 		fprintf(file, "\t{ ");
-		fprintf(file, "%f", mat[i * n + 0]);
+		fprintf(file, "% 10f", mat[i * n + 0]);
+
 		for (GLuint j = 1; j < n; j++)
-		{
-			fprintf(file, ", %f", mat[i * n + j]);
-		}
+			fprintf(file, ", % 10f", mat[i * n + j]);
+
 		fprintf(file, " }\n");
 	}
 	fprintf(file, "}\n");
