@@ -39,7 +39,16 @@ int		object_write(object *object, FILE *file);
 
 int		object_exec(object *object, char *command);
 
+int		object_o(object *object, const char *arguments);
+int		object_g(object *object, const char *arguments);
+
+int		object_mtllib(object *object, const char *arguments);
+int		object_usemtl(object *object, const char *arguments);
+int		object_s(object *object, const char *arguments);
+
 int		object_v(object *object, const char *arguments);
 int		object_vn(object *object, const char *arguments);
 int		object_vt(object *object, const char *arguments);
 int		object_f(object *object, const char *arguments);
+
+int		object_l(object *object, const char *arguments);

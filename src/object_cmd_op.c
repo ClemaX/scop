@@ -3,6 +3,8 @@
 
 #include <object.h>
 
+#include <logger.h>
+
 static inline GLsizeiptr	argument_count(const char *arguments)
 {
 	GLsizeiptr	count;
@@ -65,6 +67,85 @@ static inline int			face_parse(face *face, const char *arguments)
 	return ret;
 }
 
+int							object_o(object *object, const char *arguments)
+{
+	int	ret;
+
+	ret = *arguments == '\0';
+
+	if (ret == 0)
+	{
+		(void)object;
+		warning("object_cmd_op: operator 'o' has not been implemented!\n");
+	}
+
+	return 0;
+}
+
+int							object_g(object *object, const char *arguments)
+{
+	int ret;
+
+	// TODO: Implement named groups and group their components accordingly
+	ret = *arguments == '\0';
+
+	if (ret == 0)
+	{
+		(void)object;
+		warning("object_cmd_op: operator 'g' has not been implemented!\n");
+	}
+
+	return 0;
+}
+
+int							object_mtllib(object *object, const char *arguments)
+{
+	int ret;
+
+	// TODO: Implement material file parsing and loading
+	ret = *arguments == '\0';
+
+	if (ret == 0)
+	{
+		(void)object;
+		warning("object_cmd_op: operator 'mtllib' has not been implemented!\n");
+	}
+
+	return 0;
+}
+
+int							object_usemtl(object *object, const char *arguments)
+{
+	int ret;
+
+	// TODO: Implement material usage
+	ret = *arguments == '\0';
+
+	if (ret == 0)
+	{
+		(void)object;
+		warning("object_cmd_op: operator 'usemtl' has not been implemented!\n");
+	}
+
+	return 0;
+}
+
+int							object_s(object *object, const char *arguments)
+{
+	int ret;
+
+	// TODO: Implement smoothing groups and shade their components accordingly
+	ret = *arguments == '\0';
+
+	if (ret == 0)
+	{
+		(void)object;
+		warning("object_cmd_op: operator 's' has not been implemented!\n");
+	}
+
+	return 0;
+}
+
 int							object_v(object *object, const char *arguments)
 {
 	vec4	vertex = {0, 0, 0, 1};
@@ -115,4 +196,21 @@ int							object_f(object *object, const char *arguments)
 		ret = face_cnt_push(&object->f, &face);
 
 	return ret;
+}
+
+int							object_l(object *object, const char *arguments)
+{
+	const GLsizeiptr	point_count = argument_count(arguments);
+	int					ret;
+
+	// TODO: Implement smoothing groups and shade their components accordingly
+	ret = point_count < 2;
+
+	if (ret == 0)
+	{
+		(void)object;
+		warning("object_cmd_op: operator 'l' has not been implemented!\n");
+	}
+
+	return 0;
 }

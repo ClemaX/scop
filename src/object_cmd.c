@@ -17,11 +17,21 @@ static void				object_cmd_perror(const object_cmd *cmd,
 
 static const object_cmd	*object_cmd_parse(const char *command_name)
 {
+	// TODO: Implement l, o, g, mtllib, usemtl and s operations
 	static const object_cmd	commands[] = {
-		{ "v",	"x, y, z [,w] (w defaults to 1.0)",	&object_v },
-		{ "vn",	"x, y, z", &object_vn },
-		{ "vt",	"u [,v ,w] (v and w default to 0)", &object_vt },
-		{ "f",	"v1/vt1[/vn1] v2/vt2[/vn2] v3/vt3[/vn3] [...]", &object_f },
+		{ "o",		"object name",									object_o},
+		{ "g",		"group name",									object_g},
+
+		{ "mtllib",	"external .mtl file name",						object_mtllib},
+		{ "usemtl",	"material name",								object_usemtl},
+		{ "s",		"smooth group index or \"off\"",				object_s},
+
+		{ "v",		"x, y, z [,w] (w defaults to 1.0)",				object_v },
+		{ "vn",		"x, y, z",										object_vn },
+		{ "vt",		"u [,v ,w] (v and w default to 0)",				object_vt },
+		{ "f",		"v1/vt1[/vn1] v2/vt2[/vn2] v3/vt3[/vn3] [...]",	object_f },
+
+		{ "l",		"v1 v2 [...]",									object_l },
 	};
 	unsigned				i;
 
