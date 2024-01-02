@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <logger.h>
+
 int			main(void)
 {
 	scop	scene = (scop){
@@ -38,11 +40,13 @@ int			main(void)
 	{
 		ret = scop_load_obj_file(&scene, "./resources/triangle.obj");
 
-#ifdef DEBUG
-		object_write(&scene.obj, stderr);
-#endif
-		ret = scop_loop(&scene);
-		scop_terminate(&scene);
+		if (ret == 0)
+		{
+			debug_obj("scene.obj", scene.obj);
+
+			ret = scop_loop(&scene);
+			scop_terminate(&scene);
+		}
 	}
 
 	return ret;
