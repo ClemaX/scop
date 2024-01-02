@@ -172,6 +172,5 @@ void	camera_project(camera *cam, mat4 mvp, const mat4 model)
 	matrix_mul4(mvp, cam->view, cam->projection);
 	matrix_mul4(mvp, mvp, model);
 
-	debug("mvp:\n", stderr);
-	matrix_print(&mvp[0][0], 4, 4, stderr);
+	debug_mat4("mvp: ", mvp);
 }

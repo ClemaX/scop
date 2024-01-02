@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <scop.h>
 
 #include <string.h>
