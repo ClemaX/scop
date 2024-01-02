@@ -107,42 +107,22 @@ void	camera_rotate(camera *cam, GLfloat d_theta, GLfloat d_phi)
 	cam->theta += d_theta;
 	cam->phi += d_phi;
 
-	/* if (cam->theta >= M_PI) {
-		cam->theta -= M_PI;
+	if (cam->theta >= 2 * M_PI) {
+		cam->theta -= 2 * M_PI;
 	}
-	else if (cam->theta <= -M_PI) {
-		cam->theta += M_PI;
+	else if (cam->theta <= -2 * M_PI) {
+		cam->theta += 2 * M_PI;
 	}
 
-	if (cam->phi >= M_PI) {
-		cam->phi -= M_PI;
+	if (cam->phi >=  2 * M_PI) {
+		cam->phi -= 2 * M_PI;
 	}
-	else if (cam->phi <= -M_PI) {
-		cam->phi += M_PI;
-	} */
+	else if (cam->phi <= -2 * M_PI) {
+		cam->phi += 2 * M_PI;
+	}
 
-/*
-	(void)(d_phi);
-
-	if (cam->up[_v_y] > 0)
-		cam->theta += d_theta;
-	else
-		cam->theta -= d_theta;
-
-	if (cam->phi > M_PI * 2.0f)
-		cam->phi -= M_PI * 2.0f;
-	else if (cam->phi < -M_PI * 2.0f)
-		cam->phi += M_PI * 2.0f; */
-
-/* 	if ((cam->phi > 0 && cam->phi < M_PI)
-		|| (cam->phi < -M_PI && cam->phi > -M_PI * 2.0f))
-		cam->up[_v_y] = 1;
-	else
-		cam->up[_v_y] = -1;
- */
-
-	debug("theta: %f\n", cam->theta);
-	debug("phi: %f\n", cam->phi);
+	debug("theta:	%f\n", cam->theta);
+	debug("phi:		%f\n", cam->phi);
 
 	cam->view_dirty = true;
 }
