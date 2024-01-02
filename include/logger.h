@@ -18,11 +18,8 @@
 # define debug_obj(name, obj) fprintf(stderr, "%s:\n", name); \
 	object_write(&obj, stderr);
 
-# define debug(...) fprintf(stderr, __VA_ARGS__)
-
-# define info(...) fprintf(stderr, __VA_ARGS__)
-
-# define error(...) fprintf(stderr, __VA_ARGS__)
+# define debug(fmt, ...) fprintf(stderr, \
+	"debug:   "fmt __VA_OPT__(,) __VA_ARGS__)
 #else
 # define debug_vec2(name, vec) (void)0;
 # define debug_vec3(name, vec) (void)0;
@@ -30,6 +27,13 @@
 # define debug_obj(name, obj) (void)0;
 
 # define debug(...) (void)0
-# define info(...) fprintf(stderr, __VA_ARGS__)
-# define error(...) fprintf(stderr, __VA_ARGS__)
 #endif
+
+# define info(fmt, ...) fprintf(stderr, \
+	"info:    "fmt __VA_OPT__(,) __VA_ARGS__)
+
+# define warning(fmt, ...) fprintf(stderr, \
+	"warning: "fmt __VA_OPT__(,) __VA_ARGS__)
+
+# define error(fmt, ...) fprintf(stderr, \
+	"error:   "fmt  __VA_OPT__(,) __VA_ARGS__)
