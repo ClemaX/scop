@@ -6,6 +6,30 @@
 
 #include <logger.h>
 
+static int	object_getline(char **restrict line, size_t *restrict size,
+	FILE *restrict file)
+{
+	ssize_t	len;
+	
+	len = getline(line, size, file);
+
+	if (len > 0)
+	{
+		char *end = strchr(*line, '#');			
+		
+		if (end == NULL)
+			end = strchr(*line, '\n');
+
+		if (end != NULL)
+		{
+			*end = '\0';
+			len = end - *line;
+		}
+	}
+
+	return len;
+}
+
 int	object_load(object *object, FILE *file)
 {
 	char	*line;
@@ -23,22 +47,11 @@ int	object_load(object *object, FILE *file)
 
 	do
 	{
-		len = getline(&line, &size, file);
+		len = object_getline(&line, &size, file);
+
 		if (len > 0)
-		{
-			char *end = strchr(line, '#');			
-			
-			if (end == NULL)
-				end = strchr(line, '\n');
-
-			if (end != NULL)
-			{
-				*end = '\0';
-				len = end - line;
-			}
-
 			ret = object_exec(object, line);
-		}
+
 	} while (len != -1 && ret == 0);
 
 	if (len == -1 && errno != 0)
