@@ -33,16 +33,26 @@ int			scop_load_obj_file(scop_scene *scene, const char *file_path)
 
 	file = fopen(file_path, "r");
 	ret = -(file == NULL);
-	if (ret == 0)
-	{
-		ret = object_load(&scene->obj, file);
+	if (ret != 0)
+		goto fopen_error;
 
-		fclose(file);
+	ret = object_load(&scene->obj, file);
 
-		scop_buffer_obj(scene);
-	}
-	else
-		error("fopen: %s: %s\n", file_path, strerror(errno));
+	fclose(file);
 
+	if (ret != 0)
+		goto object_load_error;
+
+	scop_buffer_obj(scene);
+
+	goto done;
+
+fopen_error:
+	error("fopen: %s: %s\n", file_path, strerror(errno));
+
+object_load_error:
+	error("object_load: Could not load object from filepath '%s'\n", file_path);
+
+done:
 	return ret;
 }

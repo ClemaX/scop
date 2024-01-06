@@ -34,20 +34,24 @@ int			main(void)
 			.fragment_shader = SHADER_DIR"/fragment.glsl",
 		}
 	};
-	int		ret = scop_init(&scene);
+	int		ret;
 
-	if (ret == 0)
-	{
-		ret = scop_load_obj_file(&scene, "./resources/42.obj");
+	ret = scop_init(&scene);
+	if (ret != 0)
+		goto scop_init_error;
 
-		if (ret == 0)
-		{
-			debug_obj("scene.obj", scene.obj);
+	ret = scop_load_obj_file(&scene, "./resources/42.obj");
+	if (ret != 0)
+		goto scop_load_obj_error;
 
-			ret = scop_loop(&scene);
-			scop_terminate(&scene);
-		}
-	}
+	//debug_obj("scene.obj", scene.obj);
 
+	ret = scop_loop(&scene);
+
+scop_load_obj_error:
+	scop_terminate(&scene);
+
+
+scop_init_error:
 	return ret;
 }

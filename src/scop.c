@@ -88,19 +88,29 @@ static void			on_resize(GLFWwindow* window, int width, int height)
 	debug("Resized viewport to %dx%d!\n", width, height);
 
 	scene = glfwGetWindowUserPointer(window);
-	if (scene != NULL)
-	{
-		debug("Resizing scene...\n");
-		scene->settings.width = width;
-		scene->settings.height = height;
 
-		aspect = (float)width / (float)height;
+	if (scene == NULL)
+		goto user_pointer_error;
 
-		debug("Setting camera projection for aspect ratio '%f'...\n", aspect);
-		camera_set_aspect(&scene->cam, aspect);
+	debug("Resizing scene...\n");
+	scene->settings.width = width;
+	scene->settings.height = height;
 
-		scop_draw(scene);
-	}
+	aspect = (float)width / (float)height;
+
+	debug("Setting camera projection for aspect ratio '%f'...\n", aspect);
+	camera_set_aspect(&scene->cam, aspect);
+
+	scop_draw(scene);
+
+	goto done;
+
+
+user_pointer_error:
+	error("on_resize: Could not retrieve scene from GLFW user pointer!\n");
+
+done:
+	return;
 }
 
 static inline int	scop_window_init(scop_scene *scene)
@@ -112,15 +122,16 @@ static inline int	scop_window_init(scop_scene *scene)
 		&scene->settings.height, SCOP_WINDOW_NAME);
 
 	ret = -(scene->window == NULL);
-	if (ret == 0)
-	{
-		debug("Initialized window at %p\n", scene->window);
+	if (ret != 0)
+		goto window_new_error;
 
-		glfwMakeContextCurrent(scene->window);
-		glfwSetWindowUserPointer(scene->window, scene);
-		//glViewport(0, 0, scene->settings.width, scene->settings.height);
-	}
+	debug("Initialized window at %p\n", scene->window);
 
+	glfwMakeContextCurrent(scene->window);
+	glfwSetWindowUserPointer(scene->window, scene);
+	//glViewport(0, 0, scene->settings.width, scene->settings.height);
+
+window_new_error:
 	return ret;
 }
 
@@ -132,21 +143,23 @@ static inline int	scop_shader_init(scop_scene *scene)
 		scene->settings.fragment_shader);
 
 	ret = -(scene->shader.id == 0);
-	if (ret == 0)
+	if (ret != 0)
+		goto shader_load_error;
+
+	scene->shader.mvp_loc = glGetUniformLocation(scene->shader.id,
+		UNIFORM_MVP);
+
+	scene->shader.res_loc = glGetUniformLocation(scene->shader.id,
+		UNIFORM_RES);
+
+	ret = -(scene->shader.mvp_loc == -1);
+	if (ret != 0)
 	{
-		scene->shader.mvp_loc = glGetUniformLocation(scene->shader.id,
-			UNIFORM_MVP);
-
-		scene->shader.res_loc = glGetUniformLocation(scene->shader.id,
-			UNIFORM_RES);
-
-		ret = -(scene->shader.mvp_loc == -1);
-		if (ret != 0)
-		{
-			glDeleteShader(scene->shader.id);
-			scene->shader.id = 0;
-		}
+		glDeleteShader(scene->shader.id);
+		scene->shader.id = 0;
 	}
+
+shader_load_error:
 
 	return ret;
 }
@@ -156,47 +169,51 @@ int			scop_init(scop_scene *scene)
 	int			ret;
 
 	ret = glfw_init(&scene->settings);
-	if (ret == 0)
-	{
-		ret = scop_window_init(scene);
-		if (ret == 0)
-		{
-			ret = glew_init();
-			if (ret == 0)
-			{
-				ret = scop_shader_init(scene);
-				if (ret == 0)
-				{
-					const GLfloat	dist = 10;
-					const vec3		target = { 0, 0, 0 };
-					const vec3		up = { 0, 1, 0 };
+	if (ret != 0)
+		goto glfw_init_error;
 
-					vertex_array_init(&scene->vao_id);
-					vertex_buffer_init(&scene->vbo_id);
-					vertex_buffer_init(&scene->vibo_id);
+	ret = scop_window_init(scene);
+	if (ret != 0)
+		goto window_init_error;
 
-					camera_init(&scene->cam, 90.0f, 0.1f, 100.0f);
-					camera_lookat(&scene->cam, up, target, dist);
+	ret = glew_init();
+	if (ret != 0)
+		goto glew_init_error;
 
-					glEnable(GL_CULL_FACE);
+	ret = scop_shader_init(scene);
+	if (ret != 0)
+		goto shader_init_error;
 
-					glfwSetWindowSizeCallback(scene->window, &on_resize);
+	const GLfloat	dist = 10;
+	const vec3		target = { 0, 0, 0 };
+	const vec3		up = { 0, 1, 0 };
 
-					glfwGetWindowSize(scene->window, &scene->settings.width,
-						&scene->settings.height);
-				}
-			}
+	vertex_array_init(&scene->vao_id);
+	vertex_buffer_init(&scene->vbo_id);
+	vertex_buffer_init(&scene->vibo_id);
 
-			if (ret != 0)
-			{
-				error("Fatal error, destroying window!\n");
-				glfwDestroyWindow(scene->window);
-				scene->window = NULL;
-			}
-		}
-		if (ret != 0)
-			glfwTerminate();
-	}
+	camera_init(&scene->cam, 90.0f, 0.1f, 100.0f);
+	camera_lookat(&scene->cam, up, target, dist);
 
+	glEnable(GL_CULL_FACE);
+
+	glfwSetWindowSizeCallback(scene->window, &on_resize);
+
+	glfwGetWindowSize(scene->window, &scene->settings.width,
+		&scene->settings.height);
+
+	goto done;
+
+shader_init_error:
+glew_init_error:
+	glfwDestroyWindow(scene->window);
+	scene->window = NULL;
+
+window_init_error:
+	error("Fatal error!\n");
+	glfwTerminate();
+
+glfw_init_error:
+done:
 	return ret;
 }

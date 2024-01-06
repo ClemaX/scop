@@ -34,9 +34,9 @@ void	scop_draw(scop_scene *scene)
 	);
 
 	glDrawElements(
-		GL_TRIANGLES,				// Element type
+		GL_TRIANGLES,					// Element type
 		scene->vertex_index_count,	// Vertex index count
-		GL_UNSIGNED_BYTE,			// Vertex index data type
+		GL_UNSIGNED_BYTE,				// Vertex index data type
 		(void*)0					// Vertex indices offset
 	);
 
@@ -53,7 +53,9 @@ void		scop_terminate(scop_scene *scene)
 		glDeleteShader(scene->shader.id);
 		scene->shader.id = 0;
 	}
+
 	glfwTerminate();
+
 	object_destroy(&scene->obj);
 }
 
@@ -130,8 +132,10 @@ static void	key_callback(GLFWwindow *window, int key, int scancode, int action,
 		scop_key = keymap_get(scene->settings.keymap, key);
 		if (scop_key != -1)
 		{
-			/* debug("'%s' key state: %d, mods: %d, scancode: %d\n",
-				scop_keystrtab[scop_key], action, mods, scancode); */
+/*
+ 			debug("'%s' key state: %d, mods: %d, scancode: %d\n",
+				scop_keystrtab[scop_key], action, mods, scancode);
+*/
 			if (action == GLFW_RELEASE)
 				scene->input &= ~(1 << scop_key);
 			else if (action == GLFW_PRESS)
