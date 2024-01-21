@@ -5,7 +5,19 @@
 
 #include <logger.h>
 
-int			main(void)
+static void	show_usage(const char *name)
+{
+	fprintf(stdout, "Usage: %s OBJECT_FILE\n", name);
+}
+
+static int	invalid_arguments(const char *name)
+{
+	fputs("scop: Missing object filepath!\n", stderr);
+	show_usage(name);
+	return 2;
+}
+
+int			main(int ac, const char **av)
 {
 	scop_scene	scene = (scop_scene){
 		.settings = {
@@ -36,11 +48,17 @@ int			main(void)
 	};
 	int		ret;
 
+	if (ac < 2)
+	{
+		ret = invalid_arguments(av[0]);
+		goto scop_init_error;
+	}
+
 	ret = scop_init(&scene);
 	if (ret != 0)
 		goto scop_init_error;
 
-	ret = scop_load_obj_file(&scene, "./resources/42.obj");
+	ret = scop_load_obj_file(&scene, av[1]);
 	if (ret != 0)
 		goto scop_load_obj_error;
 
