@@ -12,6 +12,9 @@
 # define debug_vec3(name, vec) fprintf(stderr, "%s: {% 10f, % 10f, % 10f}\n",\
 	name, vec[_v_x], vec[_v_y], vec[_v_z])
 
+# define debug_vec4(name, vec) fprintf(stderr, "%s: {% 10f, % 10f, % 10f, % 10f}\n",\
+	name, vec[_v_x], vec[_v_y], vec[_v_z], vec[_v_w])
+
 # define debug_mat4(name, mat) fprintf(stderr, "%s: ", name); \
 	matrix_print(&mat[0][0], 4, 4, stderr);
 
@@ -23,6 +26,7 @@
 #else
 # define debug_vec2(name, vec) (void)0;
 # define debug_vec3(name, vec) (void)0;
+# define debug_vec4(name, vec) (void)0;
 # define debug_mat4(name, mat) (void)0;
 # define debug_obj(name, obj) (void)0;
 
