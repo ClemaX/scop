@@ -19,13 +19,6 @@ void	vertex_buffer_init(GLuint *buffer_id)
 	glGenBuffers(1, buffer_id);
 	debug("Initialized vertex buffer with id %u\n", *buffer_id);
 }
-/*
-void	vertex_index_buffer_init(GLuint *buffer_id)
-{
-	debug("Initializing vertex index buffer...\n");
-	glGenBuffers(1, buffer_id);
-	debug("Initialized vertex index buffer with id %u\n", *buffer_id);
-} */
 
 void	vertex_buffer_load(GLuint buffer_id, vertex_cnt *container,
 	GLenum usage)
@@ -49,44 +42,17 @@ GLsizei	vertex_index_buffer_load(GLuint buffer_id, face_cnt *container,
 	GLsizei		index_count;
 	GLuint		*indices;
 
+	indices = face_cnt_triangulate(container, &index_count);
+
+	if (indices == NULL)
+	{
+		perror("face_cnt_triangulate");
+		index_count = -1;
+		goto face_cnt_triangulate_error;
+	}
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_id);
 	debug("Bound vertex index buffer with id %u!\n", buffer_id);
-
-	index_count = 0;
-
-	for (GLsizei i = 0; i < container->count; ++i) {
-		if (container->data[i].count == 3)
-			index_count += container->data[i].count;
-		else if (container->data[i].count == 4)
-			index_count += (container->data[i].count - 2) * 3;
-		// TODO: Either support or prevent faces with more than 4 vertex indices
-	}
-
-	debug("Allocating temporary index buffer for %d indices...\n", index_count);
-
-	indices = malloc(sizeof(*indices) * index_count);
-
-	index_count = 0;
-
-	// TODO: Check for overflow of GLint indices
-	// TODO: Map negative values relative to the end of the vertices container
-	for (GLsizei i = 0; i < container->count; ++i) {
-		debug("face #%d:\n", i);
-		if (container->data[i].count >= 3)
-		{
-			// Add indices for first triangle vertices (0 1 2)
-			indices[index_count++] = container->data[i].elems[0].v - 1;
-			indices[index_count++] = container->data[i].elems[1].v - 1;
-			indices[index_count++] = container->data[i].elems[2].v - 1;
-		}
-		if (container->data[i].count == 4)
-		{
-			// Add indices for second triangle vertices (2 3 0)
-			indices[index_count++] = container->data[i].elems[2].v - 1;
-			indices[index_count++] = container->data[i].elems[3].v - 1;
-			indices[index_count++] = container->data[i].elems[0].v - 1;
-		}
-	}
 
 	debug("Buffering vertex index data (%d indices)...\n", index_count);
 
@@ -99,5 +65,6 @@ GLsizei	vertex_index_buffer_load(GLuint buffer_id, face_cnt *container,
 
 	free(indices);
 
+face_cnt_triangulate_error:
 	return index_count;
 }
