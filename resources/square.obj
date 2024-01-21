@@ -22,7 +22,8 @@ v -1  1  0 # D
 # A .. B
 
 
-f 1 2 3 4 # A B C D
+# A B C D
+f 1 2 3 4
 
 # Should map to flat triangle indices:
 # A B C
