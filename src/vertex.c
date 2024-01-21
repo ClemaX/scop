@@ -47,7 +47,7 @@ GLsizei	vertex_index_buffer_load(GLuint buffer_id, face_cnt *container,
 	GLenum usage)
 {
 	GLsizei		index_count;
-	GLubyte		*indices;
+	GLuint		*indices;
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_id);
 	debug("Bound vertex index buffer with id %u!\n", buffer_id);

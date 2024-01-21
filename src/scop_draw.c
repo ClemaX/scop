@@ -36,7 +36,7 @@ void	scop_draw(scop_scene *scene)
 	glDrawElements(
 		GL_TRIANGLES,					// Element type
 		scene->vertex_index_count,	// Vertex index count
-		GL_UNSIGNED_BYTE,				// Vertex index data type
+		GL_UNSIGNED_INT,				// Vertex index data type
 		(void*)0					// Vertex indices offset
 	);
 
