@@ -19,7 +19,7 @@ void	vertex_buffer_init(GLuint *buffer_id)
 	glGenBuffers(1, buffer_id);
 	debug("Initialized vertex buffer with id %u\n", *buffer_id);
 }
-/* 
+/*
 void	vertex_index_buffer_init(GLuint *buffer_id)
 {
 	debug("Initializing vertex index buffer...\n");
@@ -68,40 +68,30 @@ GLsizei	vertex_index_buffer_load(GLuint buffer_id, face_cnt *container,
 
 	index_count = 0;
 
+	// TODO: Check for overflow of GLint indices
+	// TODO: Map negative values relative to the end of the vertices container
 	for (GLsizei i = 0; i < container->count; ++i) {
 		debug("face #%d:\n", i);
-		if (container->data[i].count == 3)
-		{
-			// Add indices for simple triangle vertices
-			for (GLsizeiptr j = 0; j < container->data[i].count; ++j) {
-				debug("index #%d: %d\n", index_count, container->data[i].elems[j].v - 1);
-				indices[index_count++] = container->data[i].elems[j].v - 1;
-			}
-		}
-		else if (container->data[i].count == 4)
+		if (container->data[i].count >= 3)
 		{
 			// Add indices for first triangle vertices (0 1 2)
 			indices[index_count++] = container->data[i].elems[0].v - 1;
-			debug("index #%d: %d\n", index_count - 1, indices[index_count - 1]);
 			indices[index_count++] = container->data[i].elems[1].v - 1;
-			debug("index #%d: %d\n", index_count - 1, indices[index_count - 1]);
 			indices[index_count++] = container->data[i].elems[2].v - 1;
-			debug("index #%d: %d\n", index_count - 1, indices[index_count - 1]);
-
+		}
+		if (container->data[i].count == 4)
+		{
 			// Add indices for second triangle vertices (2 3 0)
 			indices[index_count++] = container->data[i].elems[2].v - 1;
-			debug("index #%d: %d\n", index_count - 1, indices[index_count - 1]);
 			indices[index_count++] = container->data[i].elems[3].v - 1;
-			debug("index #%d: %d\n", index_count - 1, indices[index_count - 1]);
 			indices[index_count++] = container->data[i].elems[0].v - 1;
-			debug("index #%d: %d\n", index_count - 1, indices[index_count - 1]);
 		}
 	}
-	
-	debug("Buffering vertex index data...\n");
+
+	debug("Buffering vertex index data (%d indices)...\n", index_count);
 
 	glBufferData(
-		GL_ELEMENT_ARRAY_BUFFER,		// TYPE
+		GL_ELEMENT_ARRAY_BUFFER,		// Type
 		sizeof(*indices) * index_count,	// Size
 		indices,						// Data
 		usage							// Usage

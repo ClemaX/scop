@@ -16,21 +16,22 @@ void	scop_draw(scop_scene *scene)
 	// Use shader
 	glUseProgram(scene->shader.id);
 
-	// Apply MVP
+	// Generate MVP
 	camera_project(&scene->cam, mvp, scene->obj.model);
 
+	// Pass MVP matrix and screen dimensions to shader
 	glUniformMatrix4fv(scene->shader.mvp_loc, 1, GL_FALSE, &mvp[0][0]);
 	glUniform2f(scene->shader.res_loc, scene->settings.width, scene->settings.height);
 
 	glEnableVertexAttribArray(ATTRIB_VERTEX);
 
 	glVertexAttribPointer(
-		ATTRIB_VERTEX,	// Attribute
-		4,				// Vertex size
-		GL_FLOAT,		// Data type
-		GL_FALSE,		// Normalized
-		0,				// Stride
-		(void*)0		// Array buffer offset
+		ATTRIB_VERTEX,					// Attribute
+		scene->obj.v.vertex_size / 4,	// Vertex size
+		GL_FLOAT,						// Data type
+		GL_FALSE,						// Normalized
+		0,								// Stride
+		(void*)0						// Array buffer offset
 	);
 
 	glDrawElements(
