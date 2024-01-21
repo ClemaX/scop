@@ -15,4 +15,4 @@ void	vertex_buffer_load(GLuint buffer_id, vertex_cnt *container,
 	GLenum usage);
 
 GLsizei	vertex_index_buffer_load(GLuint buffer_id, face_cnt *container,
-	GLenum usage);
+	GLsizeiptr vertex_count, GLenum usage);

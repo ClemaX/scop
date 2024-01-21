@@ -1,6 +1,7 @@
 #include <stdlib.h>
-
 #include <string.h>
+
+#include <vector.h>
 #include <face_cnt.h>
 
 #include <logger.h>
@@ -63,16 +64,17 @@ int		face_cnt_push(face_cnt *container, const face *face)
 	return ret;
 }
 
-GLuint	*face_cnt_triangulate(face_cnt *container, GLsizei *index_count)
+GLuint	*face_cnt_triangulate(face_cnt *container, GLsizeiptr vertex_count, GLsizei *index_count)
 {
 	GLuint				*indices;
 	size_t				count;
 
 	count = 0;
 
-	for (GLsizei i = 0; i < container->count; ++i) {
+	for (GLsizei i = 0; i < container->count; ++i)
+	{
 		if (container->data[i].count == 3)
-			count += container->data[i].count;
+			count += 3;
 		else if (container->data[i].count == 4)
 			count += 6;
 	}
@@ -85,22 +87,32 @@ GLuint	*face_cnt_triangulate(face_cnt *container, GLsizei *index_count)
 	count = 0;
 
 	// TODO: Check for overflow of GLint indices
-	// TODO: Map negative values relative to the end of the vertices container
-	for (GLsizei i = 0; i < container->count; ++i) {
-		debug("face #%d:\n", i);
-		if (container->data[i].count >= 3)
+	// TODO: Ensure in object parser that vertex index is not zero nor out of bounds
+	for (GLsizei face_index = 0; face_index < container->count; ++face_index)
+	{
+		GLuint	face_indices[4];
+
+		for (GLsizei elem_index = 0; elem_index < container->data[face_index].count; ++elem_index) {
+			if (container->data[face_index].elems[elem_index].v > 0)
+				face_indices[elem_index] = container->data[face_index].elems[elem_index].v - 1;
+			else
+				face_indices[elem_index] = vertex_count + container->data[face_index].elems[elem_index].v;
+		}
+
+		if (container->data[face_index].count >= 3)
 		{
 			// Add indices for first triangle vertices (0 1 2)
-			indices[count++] = container->data[i].elems[0].v - 1;
-			indices[count++] = container->data[i].elems[1].v - 1;
-			indices[count++] = container->data[i].elems[2].v - 1;
+			indices[count++] = face_indices[0];
+			indices[count++] = face_indices[1];
+			indices[count++] = face_indices[2];
 		}
-		if (container->data[i].count == 4)
+
+		if (container->data[face_index].count == 4)
 		{
 			// Add indices for second triangle vertices (2 3 0)
-			indices[count++] = container->data[i].elems[2].v - 1;
-			indices[count++] = container->data[i].elems[3].v - 1;
-			indices[count++] = container->data[i].elems[0].v - 1;
+			indices[count++] = face_indices[2];
+			indices[count++] = face_indices[3];
+			indices[count++] = face_indices[0];
 		}
 	}
 

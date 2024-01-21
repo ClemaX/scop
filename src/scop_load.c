@@ -12,7 +12,7 @@ static int	scop_buffer_obj(scop_scene *scene)
 	int ret;
 
 	vertex_buffer_load(scene->vbo_id, &scene->obj.v, GL_STATIC_DRAW);
-	scene->vertex_index_count = vertex_index_buffer_load(scene->vibo_id, &scene->obj.f, GL_STATIC_DRAW);
+	scene->vertex_index_count = vertex_index_buffer_load(scene->vibo_id, &scene->obj.f, scene->obj.v.count, GL_STATIC_DRAW);
 
 	ret = scene->vertex_index_count < 0;
 

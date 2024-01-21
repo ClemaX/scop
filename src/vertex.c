@@ -37,12 +37,12 @@ void	vertex_buffer_load(GLuint buffer_id, vertex_cnt *container,
 }
 
 GLsizei	vertex_index_buffer_load(GLuint buffer_id, face_cnt *container,
-	GLenum usage)
+	GLsizeiptr vertex_count, GLenum usage)
 {
 	GLsizei		index_count;
 	GLuint		*indices;
 
-	indices = face_cnt_triangulate(container, &index_count);
+	indices = face_cnt_triangulate(container, vertex_count, &index_count);
 
 	if (indices == NULL)
 	{
