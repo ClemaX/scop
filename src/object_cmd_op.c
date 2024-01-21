@@ -41,11 +41,9 @@ static inline int			face_parse(face *face, const char *arguments)
 
 		for (i = 0; ret == 0 && i < face->count; i++)
 		{
-			// FIXME: Use another value for no-value
-			// FIXME: Apply bound checking
-			// FIXME: Negative indices are relative to the end
-			face->elems[i].vt = -1;
-			face->elems[i].vn = -1;
+			face->elems[i].vt = 0;
+			face->elems[i].vn = 0;
+
 			ret = sscanf(arguments, "%u/%u/%u", &face->elems[i].v,
 				&face->elems[i].vt, &face->elems[i].vn) < 1;
 
@@ -193,7 +191,17 @@ int							object_f(object *object, const char *arguments)
 	ret = face_parse(&face, arguments);
 
 	if (ret == 0)
-		ret = face_cnt_push(&object->f, &face);
+	{
+		for (GLsizei i = 0; i < face.count && ret == 0; ++i) {
+			ret = face.elems[i].v < -object->v.count || face.elems[i].v > object->v.count
+				|| face.elems[i].vt < -object->vt.count || face.elems[i].vt > object->vt.count
+				|| face.elems[i].vn < -object->vn.count || face.elems[i].vn > object->vn.count;
+		}
+
+		if (ret == 0) {
+			ret = face_cnt_push(&object->f, &face);
+		}
+	}
 
 	return ret;
 }
